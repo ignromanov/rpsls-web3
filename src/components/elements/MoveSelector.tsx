@@ -1,0 +1,39 @@
+import { Move } from "@/types";
+import Image from "next/image";
+
+interface MoveSelectorProps {
+  selectedMove: Move | null;
+  onMoveSelect: (move: Move) => void;
+}
+
+const MoveSelector: React.FC<MoveSelectorProps> = ({
+  selectedMove,
+  onMoveSelect,
+}) => {
+  return (
+    <div className="flex mt-2 mb-2 space-x-2">
+      {Object.values(Move).map((move, index) => {
+        if (isNaN(Number(move))) {
+          return (
+            <Image
+              key={index}
+              src={`/images/${move}.jpg`}
+              title={move.toString()}
+              alt={move.toString()}
+              className={`w-20 h-20 cursor-pointer border rounded-md ${
+                selectedMove === move
+                  ? "border-violet-800 border-2"
+                  : "border-transparent"
+              }`}
+              onClick={() => onMoveSelect(move as Move)}
+              width={80}
+              height={80}
+            />
+          );
+        }
+      })}
+    </div>
+  );
+};
+
+export default MoveSelector;
