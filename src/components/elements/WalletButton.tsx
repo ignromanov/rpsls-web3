@@ -1,5 +1,6 @@
 import React from "react";
-import { useWallet } from "@/hooks/useWallet";
+import useWallet from "@/hooks/useWallet";
+import { shortenAddress } from "@/utils/shortern";
 
 const WalletButton: React.FC = () => {
   const { provider, address, connectWallet, disconnectWallet } = useWallet();
@@ -13,7 +14,7 @@ const WalletButton: React.FC = () => {
   };
 
   const buttonText = provider
-    ? `Disconnect (${address?.slice(0, 6)}...${address?.slice(-4)})`
+    ? `Disconnect (${shortenAddress(address)})`
     : "Connect";
 
   return (

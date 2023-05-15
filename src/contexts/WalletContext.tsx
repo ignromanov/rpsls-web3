@@ -45,7 +45,7 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   const connectWallet = useCallback(async () => {
     if (!window.ethereum) {
-      console.log("Metamask is not detected");
+      console.error("Metamask is not detected");
       return null;
     }
 
@@ -63,7 +63,6 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       );
       if (accounts && accounts.length > 0 && accounts[0]) {
         setAddress(accounts[0]);
-        console.log("Connected to wallet", accounts[0]);
         return accounts[0];
       } else {
         return null;

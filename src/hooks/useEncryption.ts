@@ -1,13 +1,15 @@
 import { useCallback } from "react";
-import { useWallet } from "./useWallet";
+import useWallet from "./useWallet";
 import { encrypt } from "@metamask/eth-sig-util";
+import { ethers, BigNumber } from "ethers";
 
 interface EncryptionHookData {
   encryptMessage: (message: string) => Promise<string | undefined>;
   decryptMessage: (encryptedMessage: string) => Promise<string | undefined>;
+  hashSaltedMove: (move: number, salt: BigNumber) => string;
 }
 
-export const useEncryption = (): EncryptionHookData => {
+const useEncryption = (): EncryptionHookData => {
   const { provider, address } = useWallet();
 
   const encryptMessage = useCallback(
@@ -24,14 +26,12 @@ export const useEncryption = (): EncryptionHookData => {
         "eth_getEncryptionPublicKey",
         [account]
       );
-      console.log("encryptionPublicKey", encryptionPublicKey);
 
       const encryptedMessage = encrypt({
         publicKey: encryptionPublicKey,
         data: message,
         version: "x25519-xsalsa20-poly1305",
       });
-      console.log("encryptedMessage", encryptedMessage);
       return JSON.stringify(encryptedMessage);
     },
     [provider]
@@ -44,14 +44,24 @@ export const useEncryption = (): EncryptionHookData => {
         return;
       }
 
-      const decryptedMessage = await provider.send("eth_decrypt", [
+      const decryptedMessage = (await provider.send("eth_decrypt", [
         encryptedMessage,
         address,
-      ]);
+      ])) as string;
       return decryptedMessage;
     },
     [address, provider]
   );
 
-  return { encryptMessage, decryptMessage };
+  const hashSaltedMove = useCallback((move: number, salt: BigNumber) => {
+    const hash = ethers.utils.solidityKeccak256(
+      ["uint8", "uint256"],
+      [move, salt]
+    );
+    return hash;
+  }, []);
+
+  return { encryptMessage, decryptMessage, hashSaltedMove };
 };
+
+export default useEncryption;
