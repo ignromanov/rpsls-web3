@@ -20,11 +20,13 @@ const Game: React.FC<GameProps> = ({ contractAddress }) => {
       contractAddress,
     });
 
-  const { j1, j2, stake } = gameData;
+  const { j1, j2, stake, gameAddress } = gameData;
 
   useEffect(() => {
     setStatusMessage("");
   }, [j1, j2, stake]);
+
+  if (!gameAddress) return <StatusMessage statusMessage={"Loading..."} />;
 
   if (!j1) return <GameNotFound />;
 

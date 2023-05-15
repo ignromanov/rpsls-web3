@@ -18,6 +18,7 @@ interface UseRPSContract {
 }
 
 interface GameData {
+  gameAddress: string | null;
   j1: string | null;
   j2: string | null;
   c1Hash: string | null;
@@ -27,6 +28,17 @@ interface GameData {
   lastAction: number;
 }
 
+const defaultGameData: GameData = {
+  gameAddress: null,
+  j1: null,
+  j2: null,
+  c1Hash: null,
+  c2: 0,
+  stake: null,
+  timeout: 0,
+  lastAction: 0,
+};
+
 const useRPSContract = ({
   setStatusMessage,
   contractAddress,
@@ -34,15 +46,7 @@ const useRPSContract = ({
   const { provider, address } = useWallet();
   const { encryptMessage, decryptMessage, hashSaltedMove } = useEncryption();
   const [rpsContract, setRpsContract] = useState<RPS | null>(null);
-  const [gameData, setGameData] = useState<GameData>({
-    j1: null,
-    j2: null,
-    c1Hash: null,
-    c2: 0,
-    stake: null,
-    timeout: 0,
-    lastAction: 0,
-  });
+  const [gameData, setGameData] = useState<GameData>(defaultGameData);
   const [transactionCount, setTransactionCount] = useState(0);
   const incrementTransactionCount = useCallback(() => {
     setTransactionCount((prevCount) => prevCount + 1);
@@ -50,6 +54,13 @@ const useRPSContract = ({
 
   const initContract = useCallback(async () => {
     if (!contractAddress || !provider) return;
+    if ((await provider.getCode(contractAddress)) === "0x") {
+      setGameData({
+        ...defaultGameData,
+        gameAddress: contractAddress,
+      });
+      return;
+    }
     const signer = provider.getSigner();
     const contract = RPS__factory.connect(contractAddress, signer);
     setRpsContract(contract);
@@ -77,6 +88,7 @@ const useRPSContract = ({
           rpsContract.lastAction(),
         ]);
       setGameData({
+        gameAddress: rpsContract.address,
         j1,
         j2,
         c1Hash,
