@@ -1,34 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Rock Paper Scissors Lizard Spock Game
 
-## Getting Started
+A decentralized Rock Paper Scissors game built on Ethereum using Next.js, TypeScript, and ethers.js.
 
-First, run the development server:
+<p align="center"><img src="public/images/rpsls.png" alt="Rock Paper Scissors Lizard Spock" width="300" /></p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This Rock Paper Scissors Lizard Spock game allows players to compete against each other in a trustless manner using Ethereum smart contracts. The game uses React for the front-end, TypeScript for type safety, and ethers.js for interacting with Ethereum.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Trustless gameplay using Ethereum smart contracts
+- Encrypted moves for secure and fair play
+- User-friendly interface built with React and Tailwind CSS
+- Responsive design for mobile and desktop
+- Timeout system to handle unresponsive players
 
-## Learn More
+## How to Play
 
-To learn more about Next.js, take a look at the following resources:
+1. Player 1 starts a new game by selecting their move, the stake amount, and the Ethereum address of Player 2. The move is encrypted and stored locally, while the stake amount and Player 2's address are sent to the smart contract.
+2. Player 2 joins the game by selecting their move and sending the same stake amount to the smart contract.
+3. Player 1 reveals their move by decrypting it and sending the result to the smart contract.
+4. The smart contract determines the winner and sends the combined stake to the winner's Ethereum address.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Timeouts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- If Player 2 does not join the game within a specified timeout period, Player 1 can claim the stake back.
+- If Player 1 does not reveal their move within the timeout period, Player 2 can claim the stake.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is licensed under the MIT License.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Support Me
+
+<a href="https://www.buymeacoffee.com/ignromanov" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
