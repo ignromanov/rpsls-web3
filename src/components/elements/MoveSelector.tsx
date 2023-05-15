@@ -17,7 +17,7 @@ const MoveSelector: React.FC<MoveSelectorProps> = ({
           return (
             <Image
               key={index}
-              src={`/images/${move}.jpg`}
+              src={`/images/${String(move).toLowerCase()}.jpg`}
               title={move.toString()}
               alt={move.toString()}
               className={`w-20 h-20 cursor-pointer border rounded-md ${
