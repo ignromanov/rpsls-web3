@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ActionButton from "./ActionButton";
-import { shortenAddress } from "@/utils/shortern";
+import { shortenAddress } from "@/utils/shorten";
 
 interface PlayerWaitingProps {
   opponentAddress: string | null;

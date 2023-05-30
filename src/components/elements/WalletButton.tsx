@@ -1,6 +1,6 @@
 import React from "react";
 import useWallet from "@/hooks/useWallet";
-import { shortenAddress } from "@/utils/shortern";
+import { shortenAddress } from "@/utils/shorten";
 
 const WalletButton: React.FC = () => {
   const { provider, address, connectWallet, disconnectWallet } = useWallet();
