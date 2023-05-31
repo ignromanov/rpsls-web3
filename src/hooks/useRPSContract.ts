@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { GameData } from "../types";
 import useRPSInitialization from "./useRPSInitialization";
 import useRPSPlayerActions from "./useRPSPlayerActions";
@@ -17,14 +17,10 @@ const defaultGameData: GameData = {
 };
 
 interface UseRPSContract {
-  setStatusMessage?: Dispatch<SetStateAction<string>>;
   contractAddress?: string | null;
 }
 
-const useRPSContract = ({
-  setStatusMessage,
-  contractAddress = null,
-}: UseRPSContract) => {
+const useRPSContract = ({ contractAddress = null }: UseRPSContract) => {
   const [gameData, setGameData] = useState<GameData>({
     ...defaultGameData,
     address: contractAddress,
@@ -45,7 +41,6 @@ const useRPSContract = ({
   const playerActions = useRPSPlayerActions({
     rpsContract,
     gameData,
-    setStatusMessage,
     incrementTransactionCount,
   });
 

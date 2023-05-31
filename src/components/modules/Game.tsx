@@ -1,31 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import useRPSContract from "@/hooks/useRPSContract";
-import StatusMessage from "@/components/elements/StatusMessage";
 import useWallet from "@/hooks/useWallet";
 import Player1Game from "@/components/modules/Player1Game";
 import Player2Game from "@/components/modules/Player2Game";
 import GameNotFound from "../elements/GameNotFound";
 import GameEnded from "../elements/GameEnded";
+import { useStatusMessage } from "@/contexts/StatusMessageContext";
 
 interface GameProps {
   contractAddress: string;
 }
 
 const Game: React.FC<GameProps> = ({ contractAddress }) => {
+  const { setStatusMessage } = useStatusMessage();
+
   const { address } = useWallet();
-  const [statusMessage, setStatusMessage] = useState("");
   const { gameData, playerActions } = useRPSContract({
-    setStatusMessage,
     contractAddress,
   });
 
   const { j1, j2, stake, isGame } = gameData;
 
   useEffect(() => {
+    if (isGame === null) {
+      setStatusMessage("Loading...");
+      return;
+    }
     setStatusMessage("");
-  }, [j1, j2, stake]);
+  }, [j1, j2, setStatusMessage, stake, isGame]);
 
-  if (isGame === null) return <StatusMessage statusMessage={"Loading..."} />;
+  if (isGame === null) return null;
 
   if (!isGame) return <GameNotFound />;
 
@@ -47,7 +51,6 @@ const Game: React.FC<GameProps> = ({ contractAddress }) => {
           gameData={gameData}
         />
       )}
-      <StatusMessage statusMessage={statusMessage} />
     </>
   );
 };

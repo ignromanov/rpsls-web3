@@ -1,26 +1,26 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { useCallback } from "react";
 import useEncryption from "./useEncryption";
 import useWallet from "./useWallet";
 import { RPS, RPS__factory } from "@/contracts";
 import { GameData, Move } from "@/types";
 import { shortenAddress } from "@/utils/shorten";
 import { ethers, BigNumber } from "ethers";
+import { useStatusMessage } from "@/contexts/StatusMessageContext";
 
 interface UseRPSPlayerActions {
   rpsContract: RPS | null;
   gameData: GameData;
-  setStatusMessage?: Dispatch<SetStateAction<string>>;
   incrementTransactionCount: () => void;
 }
 
 const useRPSPlayerActions = ({
   rpsContract,
   gameData,
-  setStatusMessage,
   incrementTransactionCount,
 }: UseRPSPlayerActions) => {
   const { provider, address } = useWallet();
   const { encryptMessage, decryptMessage, hashSaltedMove } = useEncryption();
+  const { setStatusMessage } = useStatusMessage();
 
   const startGame = useCallback(
     async (selectedMove: Move, amount: string, opponentAddress: string) => {

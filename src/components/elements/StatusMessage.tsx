@@ -1,8 +1,8 @@
-interface StatusMessageProps {
-  statusMessage: string | null;
-}
+import { useStatusMessage } from "@/contexts/StatusMessageContext";
 
-const StatusMessage: React.FC<StatusMessageProps> = ({ statusMessage }) => {
+const StatusMessage: React.FC = () => {
+  const { statusMessage } = useStatusMessage();
+
   if (!statusMessage) return null;
 
   return (

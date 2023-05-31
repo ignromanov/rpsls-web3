@@ -1,5 +1,6 @@
 import useWallet from "@/hooks/useWallet";
 import WalletButton from "../elements/WalletButton";
+import StatusMessage from "../elements/StatusMessage";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ const CardLayout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex flex-col items-center justify-center">
           <WalletButton />
           {provider && children}
+          <StatusMessage />
         </div>
       </div>
     </div>
