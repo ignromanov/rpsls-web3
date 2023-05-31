@@ -19,10 +19,13 @@ const useEncryption = (): EncryptionHookData => {
         return;
       }
 
-      const signer = provider.getSigner();
+      const ethersProvider = new ethers.providers.Web3Provider(
+        provider as unknown as ethers.providers.ExternalProvider
+      );
+      const signer = ethersProvider.getSigner();
       const account = await signer.getAddress();
 
-      const encryptionPublicKey = await provider.send(
+      const encryptionPublicKey = await ethersProvider.send(
         "eth_getEncryptionPublicKey",
         [account]
       );
@@ -44,7 +47,10 @@ const useEncryption = (): EncryptionHookData => {
         return;
       }
 
-      const decryptedMessage = (await provider.send("eth_decrypt", [
+      const ethersProvider = new ethers.providers.Web3Provider(
+        provider as unknown as ethers.providers.ExternalProvider
+      );
+      const decryptedMessage = (await ethersProvider.send("eth_decrypt", [
         encryptedMessage,
         address,
       ])) as string;

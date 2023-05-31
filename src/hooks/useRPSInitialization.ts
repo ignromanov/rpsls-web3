@@ -25,14 +25,17 @@ const useRPSInitialization = ({
     if (!contractAddress || !provider) return;
 
     try {
-      if ((await provider.getCode(contractAddress)) === "0x") {
+      const ethersProvider = new ethers.providers.Web3Provider(
+        provider as unknown as ethers.providers.ExternalProvider
+      );
+      if ((await ethersProvider.getCode(contractAddress)) === "0x") {
         setGameData((prevGameData) => ({
           ...prevGameData,
           isGame: false,
         }));
         return;
       }
-      const signer = provider.getSigner();
+      const signer = ethersProvider.getSigner();
       const contract = RPS__factory.connect(contractAddress, signer);
       setRpsContract(contract);
     } catch (error) {

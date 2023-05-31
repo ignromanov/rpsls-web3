@@ -39,7 +39,10 @@ const useRPSPlayerActions = ({
 
         setStatusMessage("Deploying the contract...");
 
-        const signer = provider.getSigner();
+        const ethersProvider = new ethers.providers.Web3Provider(
+          provider as unknown as ethers.providers.ExternalProvider
+        );
+        const signer = ethersProvider.getSigner();
         const rpsFactory = new RPS__factory(signer);
         const rpsContract = await rpsFactory.deploy(
           hashedMove,

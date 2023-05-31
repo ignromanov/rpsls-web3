@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
 interface WalletContextData {
-  provider: ethers.providers.Web3Provider | null;
+  provider: MetaMaskInpageProvider | null;
   address: string | null;
   connectWallet: () => Promise<string | null>;
   disconnectWallet: () => void;
@@ -27,16 +27,14 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!window.ethereum) {
+    const metamaskProvider = window.ethereum;
+    if (!metamaskProvider) {
       console.log("Metamask is not detected");
       return;
     }
 
     connectWallet();
-
-    (window.ethereum as MetaMaskInpageProvider).on(
-      "accountsChanged",
-      (accounts) => {
+    metamaskProvider.on("accountsChanged", (accounts) => {
         setAddress((accounts as string[])[0]);
       }
     );
@@ -44,23 +42,18 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   }, []);
 
   const connectWallet = useCallback(async () => {
-    if (!window.ethereum) {
+    const metamaskProvider = window.ethereum;
+    if (!metamaskProvider) {
       console.error("Metamask is not detected");
       return null;
     }
 
     try {
       const accounts =
-        (await (window.ethereum as MetaMaskInpageProvider).request<string[]>({
+        (await metamaskProvider.request<string[]>({
           method: "eth_requestAccounts",
         })) ?? null;
 
-      setProvider(
-        new ethers.providers.Web3Provider(
-          window.ethereum as ethers.providers.ExternalProvider,
-          "any"
-        )
-      );
       if (accounts && accounts.length > 0 && accounts[0]) {
         setAddress(accounts[0]);
         return accounts[0];
