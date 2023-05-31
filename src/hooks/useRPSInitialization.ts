@@ -8,6 +8,7 @@ import {
 } from "react";
 import useWallet from "./useWallet";
 import { GameData } from "@/types";
+import { errorMessageHandler } from "@/utils/errors";
 
 interface UseRPSInitialization {
   setGameData: Dispatch<SetStateAction<GameData>>;
@@ -40,6 +41,9 @@ const useRPSInitialization = ({
       setRpsContract(contract);
     } catch (error) {
       console.error(error);
+      setStatusMessage(
+        `Error while initializing contract: ${errorMessageHandler(error)}`
+      );
       setGameData((prevGameData) => ({
         ...prevGameData,
         isGame: false,

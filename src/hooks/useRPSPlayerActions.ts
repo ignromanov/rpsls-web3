@@ -6,6 +6,7 @@ import { GameData, Move } from "@/types";
 import { shortenAddress } from "@/utils/shorten";
 import { ethers, BigNumber } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
+import { errorMessageHandler } from "@/utils/errors";
 
 interface UseRPSPlayerActions {
   rpsContract: RPS | null;
@@ -81,7 +82,9 @@ const useRPSPlayerActions = ({
 
         return rpsContract.address;
       } catch (error) {
-        setStatusMessage(`Error starting the game: ${error}`);
+        setStatusMessage(
+          `Error starting the game: ${errorMessageHandler(error)}`
+        );
       }
     },
     [
@@ -112,7 +115,9 @@ const useRPSPlayerActions = ({
         setStatusMessage("Move submitted successfully.");
         incrementTransactionCount();
       } catch (error) {
-        setStatusMessage(`Error submitting move: ${error}`);
+        setStatusMessage(
+          `Error submitting move: ${errorMessageHandler(error)}`
+        );
       }
     },
     [
@@ -159,7 +164,7 @@ const useRPSPlayerActions = ({
       incrementTransactionCount();
     } catch (error) {
       console.error(error);
-      setStatusMessage(`Error revealing move: ${error}`);
+      setStatusMessage(`Error revealing move: ${errorMessageHandler(error)}`);
     }
   }, [
     rpsContract,
@@ -185,7 +190,7 @@ const useRPSPlayerActions = ({
       setStatusMessage("Funds claimed successfully.");
       incrementTransactionCount();
     } catch (error) {
-      setStatusMessage(`Error claiming funds: ${error}`);
+      setStatusMessage(`Error claiming funds: ${errorMessageHandler(error)}`);
     }
   }, [rpsContract, setStatusMessage, provider, incrementTransactionCount]);
 
@@ -204,7 +209,7 @@ const useRPSPlayerActions = ({
       setStatusMessage("Funds claimed successfully.");
       incrementTransactionCount();
     } catch (error) {
-      setStatusMessage(`Error claiming funds: ${error}`);
+      setStatusMessage(`Error claiming funds: ${errorMessageHandler(error)}`);
     }
   }, [rpsContract, setStatusMessage, provider, incrementTransactionCount]);
 
