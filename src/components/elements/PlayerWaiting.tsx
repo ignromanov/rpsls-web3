@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ActionButton from "./ActionButton";
 import { shortenAddress } from "@/utils/shorten";
+import CopyPageURL from "./CopyPageURL";
 
 interface PlayerWaitingProps {
   opponentAddress: string | null;
@@ -48,11 +49,38 @@ const PlayerWaiting: React.FC<PlayerWaitingProps> = ({
       <h1 className="text-2xl font-semibold mt-6 text-violet-900">
         Duel in action!
       </h1>
-      <p className="text-base mt-4 text-violet-600">
-        Waiting for{" "}
-        <span className="font-semibold">{shortenAddress(opponentAddress)}</span>{" "}
-        to move...
-      </p>
+      {isTimeoutButtonDisabled && (
+        <>
+          <p className="text-base mt-4 text-violet-600">
+            Share the link below with another player:
+          </p>
+          <CopyPageURL />
+        </>
+      )}
+      <p className="text-base mt-4 text-violet-600 text-center">
+        {isTimeoutButtonDisabled ? (
+          <>
+            Hang tight!
+            <br />
+            The player{" "}
+            <span className="font-semibold">
+              {shortenAddress(opponentAddress)}
+            </span>{" "}
+            still has <br />
+            {remainingTime}s to make their move.
+          </>
+        ) : (
+          <>
+            The time has expired for{" "}
+            <span className="font-semibold">
+              {shortenAddress(opponentAddress)}
+            </span>
+            !
+            <br />
+            Go ahead and win the game!
+          </>
+        )}
+      </p>{" "}
       <ActionButton
         isDisabled={isTimeoutButtonDisabled}
         onClickHandler={onTimeout}
