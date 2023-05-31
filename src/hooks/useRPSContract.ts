@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GameData } from "../types";
 import useRPSInitialization from "./useRPSInitialization";
 import useRPSPlayerActions from "./useRPSPlayerActions";
 import useRPSFetchData from "./useRPSFetchData";
+import useWallet from "./useWallet";
 
 const defaultGameData: GameData = {
   address: null,
@@ -26,6 +27,15 @@ const useRPSContract = ({ contractAddress = null }: UseRPSContract) => {
     address: contractAddress,
   });
   const [transactionCount, setTransactionCount] = useState(0);
+  const { chainId } = useWallet();
+
+  useEffect(() => {
+    setTransactionCount(0);
+    setGameData({
+      ...defaultGameData,
+      address: contractAddress,
+    });
+  }, [chainId, contractAddress]);
 
   const incrementTransactionCount = useCallback(() => {
     setTransactionCount((prevCount) => prevCount + 1);

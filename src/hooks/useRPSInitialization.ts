@@ -8,6 +8,8 @@ import {
 } from "react";
 import useWallet from "./useWallet";
 import { GameData } from "@/types";
+import { ethers } from "ethers";
+import { useStatusMessage } from "@/contexts/StatusMessageContext";
 import { errorMessageHandler } from "@/utils/errors";
 
 interface UseRPSInitialization {
@@ -19,8 +21,10 @@ const useRPSInitialization = ({
   contractAddress,
   setGameData,
 }: UseRPSInitialization): RPS | null => {
-  const { provider, address } = useWallet();
   const [rpsContract, setRpsContract] = useState<RPS | null>(null);
+
+  const { provider, address, chainId } = useWallet();
+  const { setStatusMessage } = useStatusMessage();
 
   const initContract = useCallback(async () => {
     if (!contractAddress || !provider) return;
@@ -50,7 +54,7 @@ const useRPSInitialization = ({
       }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contractAddress, provider, address]);
+  }, [contractAddress, provider, address, chainId]);
 
   useEffect(() => {
     initContract();

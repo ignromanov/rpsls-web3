@@ -5,13 +5,14 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
-import { ethers } from "ethers";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
 interface WalletContextData {
   provider: MetaMaskInpageProvider | null;
   address: string | null;
+  chainId: string | null;
   connectWallet: () => Promise<string | null>;
+  switchChainId: (chainId: string) => Promise<void>;
   disconnectWallet: () => void;
 }
 
@@ -22,9 +23,9 @@ interface WalletProviderProps {
 }
 
 const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
-  const [provider, setProvider] =
-    useState<ethers.providers.Web3Provider | null>(null);
+  const [provider, setProvider] = useState<MetaMaskInpageProvider | null>(null);
   const [address, setAddress] = useState<string | null>(null);
+  const [chainId, setChainId] = useState<string | null>(null);
 
   useEffect(() => {
     const metamaskProvider = window.ethereum;
@@ -35,9 +36,11 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
     connectWallet();
     metamaskProvider.on("accountsChanged", (accounts) => {
-        setAddress((accounts as string[])[0]);
-      }
-    );
+      setAddress((accounts as string[])[0]);
+    });
+    metamaskProvider.on("chainChanged", (chainId) => {
+      setChainId(chainId as string);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -49,6 +52,14 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     }
 
     try {
+      setProvider(metamaskProvider);
+
+      const providerChainId =
+        ((await metamaskProvider.request<string>({
+          method: "eth_chainId",
+        })) as string) ?? null;
+      setChainId(providerChainId);
+
       const accounts =
         (await metamaskProvider.request<string[]>({
           method: "eth_requestAccounts",
@@ -66,6 +77,25 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const switchChainId = useCallback(
+    async (chainId: string) => {
+      if (!provider) {
+        console.error("Metamask is not detected");
+        return;
+      }
+
+      try {
+        await provider.request<string[]>({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId }],
+        });
+      } catch (switchError) {
+        console.error(switchError);
+      }
+    },
+    [provider]
+  );
+
   const disconnectWallet = () => {
     setProvider(null);
     setAddress(null);
@@ -73,7 +103,14 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   return (
     <WalletContext.Provider
-      value={{ provider, address, connectWallet, disconnectWallet }}
+      value={{
+        provider,
+        address,
+        chainId,
+        connectWallet,
+        switchChainId,
+        disconnectWallet,
+      }}
     >
       {children}
     </WalletContext.Provider>

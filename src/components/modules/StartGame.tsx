@@ -5,12 +5,15 @@ import { Move } from "../../types";
 import MoveSelector from "../elements/MoveSelector";
 import ActionButton from "../elements/ActionButton";
 import { ethers } from "ethers";
+import useWallet from "@/hooks/useWallet";
 
 const StartGame: React.FC = () => {
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
   const [amount, setAmount] = useState("");
   const [opponentAddress, setOpponentAddress] = useState("");
+
   const { playerActions } = useRPSContract({});
+  const { provider, chainId } = useWallet();
   const router = useRouter();
 
   const handleMoveSelect = useCallback((move: Move) => {
@@ -39,18 +42,26 @@ const StartGame: React.FC = () => {
   const handleStartGame = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      if (selectedMove && opponentAddress && amount) {
+      if (selectedMove && opponentAddress && amount && provider) {
         const contractAddress = await playerActions.startGame(
           selectedMove,
           amount,
           opponentAddress
         );
         if (contractAddress) {
-          router.push(`/${contractAddress}`);
+          router.push(`/${chainId}/${contractAddress}`);
         }
       }
     },
-    [selectedMove, opponentAddress, amount, playerActions, router]
+    [
+      selectedMove,
+      opponentAddress,
+      amount,
+      provider,
+      playerActions,
+      router,
+      chainId,
+    ]
   );
 
   const isDisabled =
