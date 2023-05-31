@@ -15,9 +15,9 @@ const CardLayout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex flex-col items-center justify-center">
           <WalletButton />
           {provider && children}
-          <StatusMessage />
         </div>
       </div>
+      <StatusMessage />
     </div>
   );
 };
