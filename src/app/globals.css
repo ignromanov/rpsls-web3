@@ -16,3 +16,7 @@ body {
   );
   background-color: rgba(var(--background-start-rgb), 1);
 }
+
+input {
+  @apply focus:outline-none border border-solid;
+}

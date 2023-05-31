@@ -20,6 +20,7 @@ const MoveSelector: React.FC<MoveSelectorProps> = ({
               src={`/images/${String(move).toLowerCase()}.jpg`}
               title={move.toString()}
               alt={move.toString()}
+              placeholder={"empty"}
               className={`w-20 h-20 cursor-pointer border rounded-md ${
                 selectedMove === move
                   ? "border-violet-800 border-2"

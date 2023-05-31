@@ -2,7 +2,7 @@ import React from "react";
 
 interface StartGameButtonProps {
   isDisabled: boolean;
-  onClickHandler: () => void;
+  onClickHandler: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
 }
 
@@ -13,6 +13,7 @@ const ActionButton: React.FC<StartGameButtonProps> = ({
 }) => {
   return (
     <button
+      type="button"
       className={`w-full mt-2 p-2 font-semibold rounded ${
         isDisabled
           ? "bg-violet-300 text-gray-700 cursor-not-allowed"
