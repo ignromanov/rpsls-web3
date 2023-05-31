@@ -14,37 +14,36 @@ interface GameProps {
 const Game: React.FC<GameProps> = ({ contractAddress }) => {
   const { address } = useWallet();
   const [statusMessage, setStatusMessage] = useState("");
-  const { gameData, onPlay, onSolve, onJ1Timeout, onJ2Timeout } =
-    useRPSContract({
-      setStatusMessage,
-      contractAddress,
-    });
+  const { gameData, playerActions } = useRPSContract({
+    setStatusMessage,
+    contractAddress,
+  });
 
-  const { j1, j2, stake, gameAddress } = gameData;
+  const { j1, j2, stake, isGame } = gameData;
 
   useEffect(() => {
     setStatusMessage("");
   }, [j1, j2, stake]);
 
-  if (!gameAddress) return <StatusMessage statusMessage={"Loading..."} />;
+  if (isGame === null) return <StatusMessage statusMessage={"Loading..."} />;
 
-  if (!j1) return <GameNotFound />;
+  if (!isGame) return <GameNotFound />;
 
   if (stake === "0.0") return <GameEnded />;
 
   return (
     <>
-      {j1.toLowerCase() === address?.toLowerCase() && (
+      {j1?.toLowerCase() === address?.toLowerCase() && (
         <Player1Game
-          onSolve={onSolve}
-          onJ2Timeout={onJ2Timeout}
+          onSolve={playerActions.onSolve}
+          onJ2Timeout={playerActions.onJ2Timeout}
           gameData={gameData}
         />
       )}
       {j2?.toLowerCase() === address?.toLowerCase() && (
         <Player2Game
-          onPlay={onPlay}
-          onJ1Timeout={onJ1Timeout}
+          onPlay={playerActions.onPlay}
+          onJ1Timeout={playerActions.onJ1Timeout}
           gameData={gameData}
         />
       )}

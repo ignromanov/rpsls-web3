@@ -11,7 +11,7 @@ const StartGame: React.FC = () => {
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
   const [amount, setAmount] = useState("");
   const [opponentAddress, setOpponentAddress] = useState("");
-  const { startGame } = useRPSContract({ setStatusMessage });
+  const { playerActions } = useRPSContract({ setStatusMessage });
   const router = useRouter();
 
   const handleMoveSelect = useCallback((move: Move) => {
@@ -20,7 +20,7 @@ const StartGame: React.FC = () => {
 
   const handleStartGame = useCallback(async () => {
     if (selectedMove && opponentAddress && amount) {
-      const contractAddress = await startGame(
+      const contractAddress = await playerActions.startGame(
         selectedMove,
         amount,
         opponentAddress
@@ -29,7 +29,7 @@ const StartGame: React.FC = () => {
         router.push(`/${contractAddress}`);
       }
     }
-  }, [amount, opponentAddress, router, selectedMove, startGame]);
+  }, [selectedMove, opponentAddress, amount, playerActions, router]);
 
   const isDisabled = !selectedMove || !opponentAddress || !amount;
 

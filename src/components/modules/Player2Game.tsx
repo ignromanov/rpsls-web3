@@ -1,5 +1,4 @@
-import { GameData } from "@/hooks/useRPSContract";
-import { Move } from "@/types";
+import { GameData, Move } from "@/types";
 import React, { useCallback, useState } from "react";
 import MoveSelector from "../elements/MoveSelector";
 import ActionButton from "../elements/ActionButton";

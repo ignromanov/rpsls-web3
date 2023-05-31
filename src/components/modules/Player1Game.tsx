@@ -1,7 +1,7 @@
 import React from "react";
 import ActionButton from "../elements/ActionButton";
 import PlayerWaiting from "../elements/PlayerWaiting";
-import { GameData } from "@/hooks/useRPSContract";
+import { GameData } from "@/types";
 
 interface Player1GameProps {
   onSolve: () => void;
