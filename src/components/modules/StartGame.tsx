@@ -45,13 +45,18 @@ const StartGame: React.FC = () => {
         placeholder="Opponent's address"
         className="w-full p-2 mb-2 mt-2 rounded border border-violet-400"
       />
-      <input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="Bet amount"
-        className="w-full p-2 mb-2 mt-1 rounded border border-violet-400"
-      />
+      <div className="relative mb-4 mt-2 flex items-stretch w-full">
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Bet amount"
+          className="relative flex-grow min-w-0 block p-2 rounded-l border border-solid border-violet-400"
+        />
+        <span className="flex items-center whitespace-nowrap rounded-r border border-l-0 border-solid border-violet-400 px-3 py-[0.25rem] text-center text-base font-normal leading-[1.6] ">
+          Wei
+        </span>
+      </div>
       <MoveSelector
         selectedMove={selectedMove}
         onMoveSelect={handleMoveSelect}

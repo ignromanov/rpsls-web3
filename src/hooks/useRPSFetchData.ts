@@ -59,7 +59,7 @@ const useRPSFetchData = ({
 
         setGameData((prevGameData) => {
           const newLastAction = lastAction.toNumber();
-          const newStake = ethers.utils.formatEther(stake);
+          const newStake = ethers.utils.formatUnits(stake, "wei");
           if (
             prevGameData.c2 !== c2 ||
             prevGameData.lastAction !== newLastAction ||

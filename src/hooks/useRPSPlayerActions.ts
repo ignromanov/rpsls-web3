@@ -45,7 +45,7 @@ const useRPSPlayerActions = ({
           hashedMove,
           opponentAddress,
           {
-            value: ethers.utils.parseEther(amount),
+            value: ethers.utils.parseUnits(amount, "wei"),
           }
         );
 
@@ -99,7 +99,7 @@ const useRPSPlayerActions = ({
         setStatusMessage("Submitting your move...");
 
         const tx = await rpsContract.play(Move[move], {
-          value: ethers.utils.parseEther(gameData.stake || "0"),
+          value: ethers.utils.parseUnits(gameData.stake || "0", "wei"),
         });
 
         setStatusMessage("Waiting for the transaction to be mined...");
