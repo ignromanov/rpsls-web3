@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import ActionButton from "./ActionButton";
+import ActionButton from "../elements/ActionButton";
 import { shortenAddress } from "@/utils/shorten";
-import CopyPageURL from "./CopyPageURL";
+import CopyPageURL from "../elements/CopyPageURL";
 
 interface PlayerWaitingProps {
   opponentAddress: string | null;
@@ -46,7 +46,7 @@ const PlayerWaiting: React.FC<PlayerWaitingProps> = ({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mt-6 text-violet-900">
+      <h1 className="text-2xl font-semibold text-violet-900">
         Duel in action!
       </h1>
       {isTimeoutButtonDisabled && (

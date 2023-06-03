@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { GameData } from "../types";
 import useRPSInitialization from "./useRPSInitialization";
-import useRPSPlayerActions from "./useRPSPlayerActions";
 import useRPSFetchData from "./useRPSFetchData";
 import useWallet from "./useWallet";
+import useRPSPlayer1Actions from "./useRPSPlayer1Actions";
+import useRPSPlayer2Actions from "./useRPSPlayer2Actions";
 
 const defaultGameData: GameData = {
   address: null,
@@ -48,7 +49,13 @@ const useRPSContract = ({ contractAddress = null }: UseRPSContract) => {
 
   useRPSFetchData({ rpsContract, setGameData, transactionCount });
 
-  const playerActions = useRPSPlayerActions({
+  const player1Actions = useRPSPlayer1Actions({
+    rpsContract,
+    gameData,
+    incrementTransactionCount,
+  });
+
+  const player2Actions = useRPSPlayer2Actions({
     rpsContract,
     gameData,
     incrementTransactionCount,
@@ -56,7 +63,8 @@ const useRPSContract = ({ contractAddress = null }: UseRPSContract) => {
 
   return {
     gameData,
-    playerActions,
+    player1Actions,
+    player2Actions,
   };
 };
 

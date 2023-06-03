@@ -12,7 +12,7 @@ const StartGame: React.FC = () => {
   const [amount, setAmount] = useState("");
   const [opponentAddress, setOpponentAddress] = useState("");
 
-  const { playerActions } = useRPSContract({});
+  const { player1Actions } = useRPSContract({});
   const { provider, chainId } = useWallet();
   const router = useRouter();
 
@@ -58,7 +58,7 @@ const StartGame: React.FC = () => {
       opponentAddress,
       amount,
       provider,
-      playerActions,
+      player1Actions,
       router,
       chainId,
     ]

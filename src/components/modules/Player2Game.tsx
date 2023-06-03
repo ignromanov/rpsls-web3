@@ -2,7 +2,7 @@ import { GameData, Move } from "@/types";
 import React, { useCallback, useState } from "react";
 import MoveSelector from "../elements/MoveSelector";
 import ActionButton from "../elements/ActionButton";
-import PlayerWaiting from "../elements/PlayerWaiting";
+import PlayerWaiting from "./PlayerWaiting";
 
 interface Player2GameProps {
   onPlay: (move: Move) => void;

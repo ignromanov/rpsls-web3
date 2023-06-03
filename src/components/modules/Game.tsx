@@ -20,7 +20,7 @@ const Game: React.FC<GameProps> = ({
   const { setStatusMessage } = useStatusMessage();
 
   const { address, provider, switchChainId, chainId } = useWallet();
-  const { gameData, playerActions } = useRPSContract({
+  const { gameData, player1Actions, player2Actions } = useRPSContract({
     contractAddress,
   });
 
@@ -66,21 +66,21 @@ const Game: React.FC<GameProps> = ({
 
   if (!isGame) return <GameNotFound />;
 
-  if (stake === "0.0") return <GameEnded />;
+  if (stake === "0") return <GameEnded />;
 
   return (
     <>
       {j1?.toLowerCase() === address?.toLowerCase() && (
         <Player1Game
-          onSolve={playerActions.onSolve}
-          onJ2Timeout={playerActions.onJ2Timeout}
+          onSolve={player1Actions.onSolve}
+          onJ2Timeout={player1Actions.onJ2Timeout}
           gameData={gameData}
         />
       )}
       {j2?.toLowerCase() === address?.toLowerCase() && (
         <Player2Game
-          onPlay={playerActions.onPlay}
-          onJ1Timeout={playerActions.onJ1Timeout}
+          onPlay={player2Actions.onPlay}
+          onJ1Timeout={player2Actions.onJ1Timeout}
           gameData={gameData}
         />
       )}
