@@ -6,11 +6,11 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import useWallet from "./useWallet";
 import { GameData } from "@/types";
 import { ethers } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
 import { errorMessageHandler } from "@/utils/errors";
+import { useWallet } from "@/contexts/WalletContext";
 
 interface UseRPSInitialization {
   setGameData: Dispatch<SetStateAction<GameData>>;

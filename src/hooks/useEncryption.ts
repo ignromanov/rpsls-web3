@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import useWallet from "./useWallet";
 import { EthEncryptedData, encrypt } from "@metamask/eth-sig-util";
 import { ethers } from "ethers";
 import { Player1SecretData } from "@/types";
+import { useWallet } from "@/contexts/WalletContext";
 
 interface EncryptionHookData {
   encryptMessage: (

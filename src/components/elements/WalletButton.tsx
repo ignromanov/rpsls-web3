@@ -1,7 +1,7 @@
 import React from "react";
-import useWallet from "@/hooks/useWallet";
 import { shortenAddress } from "@/utils/shorten";
 import MetamaskIcon from "./MetamaskIcon";
+import { useWallet } from "@/contexts/WalletContext";
 
 const WalletButton: React.FC = () => {
   const { provider, address, connectWallet, disconnectWallet } = useWallet();

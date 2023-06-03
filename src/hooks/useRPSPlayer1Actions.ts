@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import useEncryption from "./useEncryption";
-import useWallet from "./useWallet";
 import { RPS } from "@/contracts";
 import { GameData, Move, Player1SecretData } from "@/types";
 import { shortenAddress } from "@/utils/shorten";
@@ -14,6 +13,7 @@ import {
 } from "@/utils/encryption";
 import { deployContract } from "@/utils/contract";
 import { EthEncryptedData } from "@metamask/eth-sig-util";
+import { useWallet } from "@/contexts/WalletContext";
 
 type UseRPSPlayer1Actions = (input: {
   rpsContract: RPS | null;

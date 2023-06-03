@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import useRPSContract from "@/hooks/useRPSContract";
-import useWallet from "@/hooks/useWallet";
 import Player1Game from "@/components/modules/Player1Game";
 import Player2Game from "@/components/modules/Player2Game";
 import GameNotFound from "../elements/GameNotFound";
 import GameEnded from "../elements/GameEnded";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
 import { errorMessageHandler } from "@/utils/errors";
+import { useWallet } from "@/contexts/WalletContext";
 
 interface GameProps {
   chainId: string;

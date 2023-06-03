@@ -4,6 +4,7 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
+  useContext,
 } from "react";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
@@ -116,5 +117,13 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   );
 };
 
+const useWallet = (): WalletContextData => {
+  const context = useContext(WalletContext);
+  if (!context) {
+    throw new Error("useWallet must be used within a WalletProvider");
+  }
+  return context;
+};
+
 export type { WalletContextData };
-export { WalletContext, WalletProvider };
+export { WalletContext, WalletProvider, useWallet };

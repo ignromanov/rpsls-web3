@@ -5,7 +5,7 @@ import { Move } from "../../types";
 import MoveSelector from "../elements/MoveSelector";
 import ActionButton from "../elements/ActionButton";
 import { ethers } from "ethers";
-import useWallet from "@/hooks/useWallet";
+import { useWallet } from "@/contexts/WalletContext";
 
 const StartGame: React.FC = () => {
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);

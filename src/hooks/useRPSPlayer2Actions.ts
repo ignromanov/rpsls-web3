@@ -1,10 +1,10 @@
 import { useCallback } from "react";
-import useWallet from "./useWallet";
 import { RPS } from "@/contracts";
 import { GameData, Move } from "@/types";
 import { ethers } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
 import { errorMessageHandler } from "@/utils/errors";
+import { useWallet } from "@/contexts/WalletContext";
 
 type UseRPSPlayer2Actions = (params: {
   rpsContract: RPS | null;
