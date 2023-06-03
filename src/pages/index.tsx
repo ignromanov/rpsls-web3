@@ -1,4 +1,4 @@
-import StartGame from "@/components/modules/StartGame";
+import StartGame from "@/components/pages/StartGame";
 
 const IndexPage: React.FC = () => {
   return <StartGame />;

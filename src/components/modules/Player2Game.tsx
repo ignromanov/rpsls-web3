@@ -2,7 +2,7 @@ import { GameData, Move } from "@/types";
 import React, { useCallback, useState } from "react";
 import MoveSelector from "../elements/MoveSelector";
 import ActionButton from "../elements/ActionButton";
-import PlayerWaiting from "./PlayerWaiting";
+import WaitingPlayer from "../pages/WaitingPlayer";
 
 interface Player2GameProps {
   onPlay: (move: Move) => void;
@@ -49,7 +49,7 @@ const Player2Game: React.FC<Player2GameProps> = ({
   if (!lastAction) return null;
 
   return (
-    <PlayerWaiting
+    <WaitingPlayer
       opponentAddress={j1}
       timeout={timeout}
       lastAction={lastAction}

@@ -1,7 +1,7 @@
 import React from "react";
-import PlayerWaiting from "./PlayerWaiting";
+import WaitingPlayer from "../pages/WaitingPlayer";
 import { GameData } from "@/types";
-import { RevealMove } from "./RevealMove";
+import { RevealMove } from "../pages/RevealMove";
 
 interface Player1GameProps {
   onSolve: () => void;
@@ -18,7 +18,7 @@ const Player1Game: React.FC<Player1GameProps> = ({
 
   if (c2 === 0 && lastAction) {
     return (
-      <PlayerWaiting
+      <WaitingPlayer
         opponentAddress={j2}
         timeout={timeout}
         lastAction={lastAction}

@@ -9,8 +9,10 @@ import { useWallet } from "@/contexts/WalletContext";
 
 const StartGame: React.FC = () => {
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
-  const [amount, setAmount] = useState("");
-  const [opponentAddress, setOpponentAddress] = useState("");
+  const [amount, setAmount] = useState("1");
+  const [opponentAddress, setOpponentAddress] = useState(
+    "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+  );
 
   const { player1Actions } = useRPSContract({});
   const { provider, chainId } = useWallet();

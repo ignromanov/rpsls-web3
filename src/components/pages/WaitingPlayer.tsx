@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import ActionButton from "../elements/ActionButton";
 import { shortenAddress } from "@/utils/shorten";
-import CopyPageURL from "../elements/CopyPageURL";
+import CopyInput from "../elements/CopyPageURL";
 
-interface PlayerWaitingProps {
+interface WaitingPlayerProps {
   opponentAddress: string | null;
   timeout: number;
   lastAction?: number;
   onTimeout: () => void;
 }
 
-const PlayerWaiting: React.FC<PlayerWaitingProps> = ({
+const WaitingPlayer: React.FC<WaitingPlayerProps> = ({
   opponentAddress,
   timeout,
   lastAction = 0,
@@ -52,7 +52,7 @@ const PlayerWaiting: React.FC<PlayerWaitingProps> = ({
           <p className="text-base mt-2 text-violet-600">
             Share the link below with another player:
           </p>
-          <CopyPageURL />
+          <CopyInput value={window.location.href} />
         </>
       )}
       <p className="text-base my-2 text-violet-600 text-center">
@@ -91,4 +91,4 @@ const PlayerWaiting: React.FC<PlayerWaitingProps> = ({
   );
 };
 
-export default PlayerWaiting;
+export default WaitingPlayer;

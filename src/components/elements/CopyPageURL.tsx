@@ -2,27 +2,24 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
 
-const CopyPageURL: React.FC = () => {
-  const router = useRouter();
+interface CopyInputProps {
+  value: string;
+}
+
+const CopyInput: React.FC<CopyInputProps> = ({ value }) => {
   const { setStatusMessage } = useStatusMessage();
 
-  const [currentURL, setCurrentURL] = useState("");
-
-  useEffect(() => {
-    setCurrentURL(window.location.href);
-  }, [router.asPath]);
-
   const handleCopyClick = useCallback(() => {
-    navigator.clipboard.writeText(currentURL);
-    setStatusMessage("Link copied to clipboard!");
-  }, [currentURL, setStatusMessage]);
+    navigator.clipboard.writeText(value);
+    setStatusMessage("Copied to clipboard!");
+  }, [value, setStatusMessage]);
 
   return (
     <div className="relative mb-2 mt-1 flex items-stretch w-full">
       <input
         type="text"
         className="relative flex-grow min-w-0 block p-1 rounded-l border-violet-400 text-xs"
-        value={currentURL}
+        value={value}
         readOnly={true}
         aria-label="Current page URL"
         aria-describedby="button-addon2"
@@ -39,4 +36,4 @@ const CopyPageURL: React.FC = () => {
   );
 };
 
-export default CopyPageURL;
+export default CopyInput;

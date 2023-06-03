@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useCallback } from "react";
-import ActionButton from "./ActionButton";
+import ActionButton from "../elements/ActionButton";
 
 const GameEnded = React.memo(() => {
   const router = useRouter();
