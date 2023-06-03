@@ -3,7 +3,7 @@ import React from "react";
 const GameNotFound = React.memo(() => {
   return (
     <>
-      <h1 className="text-2xl font-semibold mt-6 text-violet-900">
+      <h1 className="text-2xl font-semibold text-violet-900">
         Where did it go?
       </h1>
       <p className="text-lg mt-2 text-red-600">Game not found!</p>

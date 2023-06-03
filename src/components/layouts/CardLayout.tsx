@@ -13,13 +13,18 @@ const CardLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <AntiPhishingBanner />
-      <div className="w-150 p-4 bg-violet-200 rounded-lg shadow-md">
+      <div className="w-150 p-6 bg-violet-200 rounded-lg shadow-md">
         <div className="flex flex-col items-center justify-center">
-          <WalletButton />
+          {!provider && <WalletButton />}
           {provider && children}
         </div>
       </div>
       <StatusMessage />
+      {provider && (
+        <div className="fixed top-0 right-0 p-4">
+          <WalletButton />
+        </div>
+      )}
     </div>
   );
 };

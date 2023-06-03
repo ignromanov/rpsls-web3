@@ -10,7 +10,7 @@ import { MetaMaskInpageProvider } from "@metamask/providers";
 interface WalletContextData {
   provider: MetaMaskInpageProvider | null;
   address: string | null;
-  chainId: string | null;
+  chainId: string;
   connectWallet: () => Promise<string | null>;
   switchChainId: (chainId: string) => Promise<void>;
   disconnectWallet: () => void;
@@ -25,7 +25,7 @@ interface WalletProviderProps {
 const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   const [provider, setProvider] = useState<MetaMaskInpageProvider | null>(null);
   const [address, setAddress] = useState<string | null>(null);
-  const [chainId, setChainId] = useState<string | null>(null);
+  const [chainId, setChainId] = useState<string>("");
 
   useEffect(() => {
     const metamaskProvider = window.ethereum;
@@ -34,7 +34,6 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       return;
     }
 
-    connectWallet();
     metamaskProvider.on("accountsChanged", (accounts) => {
       setAddress((accounts as string[])[0]);
     });
