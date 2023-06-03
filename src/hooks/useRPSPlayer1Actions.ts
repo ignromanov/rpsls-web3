@@ -145,6 +145,29 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
         return;
       }
 
+      setStatusMessage("Checking the game's integrity...");
+
+      const { move, salt, hash: originalHash } = decryptedTurn;
+
+      const providerChainId =
+        ((await provider.request<string>({
+          method: "eth_chainId",
+        })) as string) ?? "";
+
+      const currentHash = getHashedGame(
+        providerChainId,
+        rpsContract.address,
+        move,
+        BigNumber.from(salt)
+      );
+
+      if (currentHash !== originalHash) {
+        setStatusMessage(
+          "Error: The game's data does not match the original game."
+        );
+        return;
+      }
+
       setStatusMessage("Revealing your move...");
 
       const tx = await rpsContract.solve(Move[move], BigNumber.from(salt));
