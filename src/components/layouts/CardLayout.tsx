@@ -1,7 +1,8 @@
-import useWallet from "@/hooks/useWallet";
 import WalletButton from "../elements/WalletButton";
 import StatusMessage from "../elements/StatusMessage";
 import AntiPhishingBanner from "../elements/AntiPhishingBanner";
+import GameSteps from "../elements/GameSteps";
+import { useWallet } from "@/contexts/WalletContext";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,14 +18,15 @@ const CardLayout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex flex-col items-center justify-center">
           {!provider && <WalletButton />}
           {provider && children}
+          {provider && <GameSteps />}
         </div>
       </div>
-      <StatusMessage />
       {provider && (
         <div className="fixed top-0 right-0 p-4">
           <WalletButton />
         </div>
       )}
+      <StatusMessage />
     </div>
   );
 };
