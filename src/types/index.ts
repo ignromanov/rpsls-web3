@@ -18,5 +18,11 @@ interface GameData {
   lastAction: number;
 }
 
+interface Player1SecretData {
+  move: Move;
+  salt: string;
+  hash: string | null;
+}
+
 export { Move };
-export type { GameData };
+export type { GameData, Player1SecretData };

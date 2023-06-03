@@ -43,13 +43,10 @@ const StartGame: React.FC = () => {
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (selectedMove && opponentAddress && amount && provider) {
-        const contractAddress = await playerActions.startGame(
-          selectedMove,
-          amount,
-          opponentAddress
-        );
+        const { contractAddress, _secretToSave } =
+          await player1Actions.startGame(selectedMove, amount, opponentAddress);
         if (contractAddress) {
-          router.push(`/${chainId}/${contractAddress}`);
+          router.push(`/game/${chainId}/${contractAddress}`);
         }
       }
     },
@@ -72,7 +69,7 @@ const StartGame: React.FC = () => {
 
   return (
     <form className="flex flex-col items-center justify-center">
-      <h1 className="text-2xl font-semibold mt-6 text-violet-900">
+      <h1 className="text-2xl font-semibold text-violet-900">
         Let the game begin!
       </h1>
       <input
@@ -97,7 +94,7 @@ const StartGame: React.FC = () => {
           className="relative flex-grow min-w-0 block p-2 rounded-l border-violet-400"
         />
         <span className="flex items-center whitespace-nowrap rounded-r border border-l-0 border-solid border-violet-400 px-3 py-[0.25rem] text-center text-base font-normal leading-[1.6] ">
-          Wei
+          wei
         </span>
       </div>
       <MoveSelector

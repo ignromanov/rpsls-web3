@@ -1,76 +1,104 @@
 import { useCallback } from "react";
 import useEncryption from "./useEncryption";
 import useWallet from "./useWallet";
-import { RPS, RPS__factory } from "@/contracts";
-import { GameData, Move } from "@/types";
+import { RPS } from "@/contracts";
+import { GameData, Move, Player1SecretData } from "@/types";
 import { shortenAddress } from "@/utils/shorten";
 import { ethers, BigNumber } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
 import { errorMessageHandler } from "@/utils/errors";
+import {
+  getHashedGame,
+  hashSaltedMove,
+  prepareMessageToSave,
+} from "@/utils/encryption";
+import { deployContract } from "@/utils/contract";
+import { EthEncryptedData } from "@metamask/eth-sig-util";
 
-interface UseRPSPlayerActions {
+type UseRPSPlayer1Actions = (input: {
   rpsContract: RPS | null;
   gameData: GameData;
   incrementTransactionCount: () => void;
-}
+}) => {
+  startGame: (
+    selectedMove: Move,
+    amount: string,
+    opponentAddress: string
+  ) => Promise<{
+    contractAddress: string | null;
+    _secretToSave: Player1SecretData | EthEncryptedData | null;
+  }>;
+  onSolve: () => Promise<void>;
+  onJ2Timeout: () => Promise<void>;
+};
 
-const useRPSPlayerActions = ({
+const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
   rpsContract,
   gameData,
   incrementTransactionCount,
-}: UseRPSPlayerActions) => {
-  const { provider, address } = useWallet();
-  const { encryptMessage, decryptMessage, hashSaltedMove } = useEncryption();
+}) => {
+  const { provider, address, chainId } = useWallet();
+  const { encryptMessage, decryptMessage } = useEncryption();
   const { setStatusMessage } = useStatusMessage();
 
   const startGame = useCallback(
-    async (selectedMove: Move, amount: string, opponentAddress: string) => {
-      if (!setStatusMessage || !provider) return;
+    async (
+      selectedMove: Move,
+      amount: string,
+      opponentAddress: string
+    ): Promise<{
+      contractAddress: string | null;
+      _secretToSave: Player1SecretData | EthEncryptedData | null;
+    }> => {
+      let contractAddress: string | null = null;
+      let _secretToSave: Player1SecretData | EthEncryptedData | null = null;
+
+      if (!setStatusMessage || !provider)
+        return { contractAddress, _secretToSave };
 
       if (address?.toLowerCase() === opponentAddress.toLowerCase()) {
         setStatusMessage("You can't play against yourself");
-        return;
+        return { contractAddress, _secretToSave };
       }
 
+      incrementTransactionCount();
       try {
         setStatusMessage("Starting the game...");
-
         const salt = ethers.BigNumber.from(ethers.utils.randomBytes(32));
         const hashedMove = hashSaltedMove(parseInt(Move[selectedMove]), salt);
+        _secretToSave = prepareMessageToSave(selectedMove, salt);
 
         setStatusMessage("Deploying the contract...");
-
-        const ethersProvider = new ethers.providers.Web3Provider(
-          provider as unknown as ethers.providers.ExternalProvider
-        );
-        const signer = ethersProvider.getSigner();
-        const rpsFactory = new RPS__factory(signer);
-        const rpsContract = await rpsFactory.deploy(
+        const rpsContract = await deployContract(
+          provider,
           hashedMove,
           opponentAddress,
-          {
-            value: ethers.utils.parseUnits(amount, "wei"),
-          }
+          amount
         );
 
         setStatusMessage("Waiting for the contract to be deployed...");
-
         await rpsContract.deployed();
+        contractAddress = rpsContract.address;
 
-        setStatusMessage("Encrypting salt...");
+        setStatusMessage("Encrypting secret...");
+        const messageToEncrypt = prepareMessageToSave(
+          selectedMove,
+          salt,
+          chainId,
+          contractAddress
+        );
+        _secretToSave = messageToEncrypt;
 
-        // Encryption
-        const turnToEncrypt = JSON.stringify({
-          move: selectedMove,
-          salt: salt.toHexString(),
-        });
-        const encryptedTurn = await encryptMessage(turnToEncrypt);
-
-        if (encryptedTurn) {
-          localStorage.setItem(rpsContract.address, encryptedTurn);
+        const encryptedData = await encryptMessage(messageToEncrypt);
+        if (encryptedData) {
+          _secretToSave = encryptedData;
+          localStorage.setItem(contractAddress, JSON.stringify(encryptedData));
         } else {
-          setStatusMessage("Error encrypting salt");
-          return;
+          setStatusMessage("Error encrypting secret data");
+          return {
+            contractAddress,
+            _secretToSave,
+          };
         }
 
         setStatusMessage(
@@ -78,54 +106,23 @@ const useRPSPlayerActions = ({
             rpsContract.address
           )}`
         );
-        incrementTransactionCount();
 
-        return rpsContract.address;
+        return { contractAddress, _secretToSave };
       } catch (error) {
+        console.error(error);
         setStatusMessage(
           `Error starting the game: ${errorMessageHandler(error)}`
         );
+        return { contractAddress, _secretToSave };
       }
     },
     [
       address,
+      chainId,
       encryptMessage,
-      hashSaltedMove,
       incrementTransactionCount,
       provider,
       setStatusMessage,
-    ]
-  );
-
-  const onPlay = useCallback(
-    async (move: Move) => {
-      if (!rpsContract || !setStatusMessage || !provider) return;
-
-      try {
-        setStatusMessage("Submitting your move...");
-
-        const tx = await rpsContract.play(Move[move], {
-          value: ethers.utils.parseUnits(gameData.stake || "0", "wei"),
-        });
-
-        setStatusMessage("Waiting for the transaction to be mined...");
-
-        await tx.wait();
-
-        setStatusMessage("Move submitted successfully.");
-        incrementTransactionCount();
-      } catch (error) {
-        setStatusMessage(
-          `Error submitting move: ${errorMessageHandler(error)}`
-        );
-      }
-    },
-    [
-      rpsContract,
-      setStatusMessage,
-      provider,
-      gameData.stake,
-      incrementTransactionCount,
     ]
   );
 
@@ -142,15 +139,13 @@ const useRPSPlayerActions = ({
         return;
       }
 
-      const decryptedTurn = await decryptMessage(encryptedTurn);
+      const decryptedTurn = await decryptMessage(JSON.parse(encryptedTurn));
       if (!decryptedTurn) {
         setStatusMessage("Error decrypting move.");
         return;
       }
 
       setStatusMessage("Revealing your move...");
-
-      const { move, salt } = JSON.parse(decryptedTurn);
 
       const tx = await rpsContract.solve(Move[move], BigNumber.from(salt));
 
@@ -175,25 +170,6 @@ const useRPSPlayerActions = ({
     incrementTransactionCount,
   ]);
 
-  const onJ1Timeout = useCallback(async () => {
-    if (!rpsContract || !setStatusMessage || !provider) return;
-
-    try {
-      setStatusMessage("Claiming funds due to player 1 timeout...");
-
-      const tx = await rpsContract.j1Timeout();
-
-      setStatusMessage("Waiting for the transaction to be mined...");
-
-      await tx.wait();
-
-      setStatusMessage("Funds claimed successfully.");
-      incrementTransactionCount();
-    } catch (error) {
-      setStatusMessage(`Error claiming funds: ${errorMessageHandler(error)}`);
-    }
-  }, [rpsContract, setStatusMessage, provider, incrementTransactionCount]);
-
   const onJ2Timeout = useCallback(async () => {
     if (!rpsContract || !setStatusMessage || !provider) return;
 
@@ -213,7 +189,7 @@ const useRPSPlayerActions = ({
     }
   }, [rpsContract, setStatusMessage, provider, incrementTransactionCount]);
 
-  return { startGame, onPlay, onSolve, onJ1Timeout, onJ2Timeout };
+  return { startGame, onSolve, onJ2Timeout };
 };
 
-export default useRPSPlayerActions;
+export default useRPSPlayer1Actions;

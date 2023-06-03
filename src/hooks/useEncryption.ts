@@ -1,19 +1,23 @@
 import { useCallback } from "react";
 import useWallet from "./useWallet";
-import { encrypt } from "@metamask/eth-sig-util";
-import { ethers, BigNumber } from "ethers";
+import { EthEncryptedData, encrypt } from "@metamask/eth-sig-util";
+import { ethers } from "ethers";
+import { Player1SecretData } from "@/types";
 
 interface EncryptionHookData {
-  encryptMessage: (message: string) => Promise<string | undefined>;
-  decryptMessage: (encryptedMessage: string) => Promise<string | undefined>;
-  hashSaltedMove: (move: number, salt: BigNumber) => string;
+  encryptMessage: (
+    dataToEncrypt: Player1SecretData
+  ) => Promise<EthEncryptedData | undefined>;
+  decryptMessage: (
+    encryptedMessage: EthEncryptedData
+  ) => Promise<Player1SecretData | undefined>;
 }
 
 const useEncryption = (): EncryptionHookData => {
   const { provider, address } = useWallet();
 
-  const encryptMessage = useCallback(
-    async (message: string) => {
+  const encryptMessage: EncryptionHookData["encryptMessage"] = useCallback(
+    async (dataToEncrypt) => {
       if (!provider) {
         console.error("Wallet is not connected");
         return;
@@ -32,16 +36,15 @@ const useEncryption = (): EncryptionHookData => {
 
       const encryptedMessage = encrypt({
         publicKey: encryptionPublicKey,
-        data: message,
+        data: JSON.stringify(dataToEncrypt),
         version: "x25519-xsalsa20-poly1305",
       });
-      return JSON.stringify(encryptedMessage);
+      return encryptedMessage;
     },
     [provider]
   );
-
-  const decryptMessage = useCallback(
-    async (encryptedMessage: string) => {
+  const decryptMessage: EncryptionHookData["decryptMessage"] = useCallback(
+    async (encryptedMessage) => {
       if (!provider) {
         console.error("Wallet is not connected");
         return;
@@ -51,23 +54,15 @@ const useEncryption = (): EncryptionHookData => {
         provider as unknown as ethers.providers.ExternalProvider
       );
       const decryptedMessage = (await ethersProvider.send("eth_decrypt", [
-        encryptedMessage,
+        JSON.stringify(encryptedMessage),
         address,
       ])) as string;
-      return decryptedMessage;
+      return JSON.parse(decryptedMessage);
     },
     [address, provider]
   );
 
-  const hashSaltedMove = useCallback((move: number, salt: BigNumber) => {
-    const hash = ethers.utils.solidityKeccak256(
-      ["uint8", "uint256"],
-      [move, salt]
-    );
-    return hash;
-  }, []);
-
-  return { encryptMessage, decryptMessage, hashSaltedMove };
+  return { encryptMessage, decryptMessage };
 };
 
 export default useEncryption;

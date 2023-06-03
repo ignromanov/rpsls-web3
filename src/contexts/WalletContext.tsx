@@ -30,7 +30,7 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   useEffect(() => {
     const metamaskProvider = window.ethereum;
     if (!metamaskProvider) {
-      console.log("Metamask is not detected");
+      console.error("Metamask is not detected");
       return;
     }
 
