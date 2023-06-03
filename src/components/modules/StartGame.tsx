@@ -69,21 +69,19 @@ const StartGame: React.FC = () => {
 
   return (
     <form className="flex flex-col items-center justify-center">
-      <h1 className="text-2xl font-semibold text-violet-900">
-        Let the game begin!
-      </h1>
+      <h1>Let the game begin!</h1>
       <input
         type="text"
         value={opponentAddress}
         onChange={handleAddressChange}
         placeholder="Opponent's address"
-        className={`w-full p-2 mb-2 mt-2 rounded ${
+        className={`w-full p-2 my-2 rounded ${
           ethers.utils.isAddress(opponentAddress) || opponentAddress === ""
             ? "border-violet-400"
             : "border-red-600"
         }`}
       />
-      <div className="relative mb-2 mt-2 flex items-stretch w-full">
+      <div className="relative my-2 flex items-stretch w-full">
         <input
           type="number"
           step={1}

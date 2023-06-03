@@ -11,7 +11,7 @@ const MoveSelector: React.FC<MoveSelectorProps> = ({
   onMoveSelect,
 }) => {
   return (
-    <div className="flex mt-2 mb-2 space-x-2">
+    <div className="flex my-2 space-x-2">
       {Object.values(Move).map((move, index) => {
         if (isNaN(Number(move))) {
           return (

@@ -18,10 +18,10 @@ const CopyPageURL: React.FC = () => {
   }, [currentURL, setStatusMessage]);
 
   return (
-    <div className="relative mb-2 mt-2 flex items-stretch w-full">
+    <div className="relative mb-2 mt-1 flex items-stretch w-full">
       <input
         type="text"
-        className="relative flex-grow min-w-0 block p-2 rounded-l border-violet-400"
+        className="relative flex-grow min-w-0 block p-1 rounded-l border-violet-400 text-xs"
         value={currentURL}
         readOnly={true}
         aria-label="Current page URL"
@@ -29,7 +29,7 @@ const CopyPageURL: React.FC = () => {
       />
       <button
         type="button"
-        className="z-[2] inline-block rounded-r bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal bg-violet-700 text-white hover:bg-violet-600"
+        className="z-[2] inline-block rounded-r bg-primary px-3 py-1 text-xs font-medium uppercase leading-tight bg-violet-700 text-white hover:bg-violet-600"
         onClick={handleCopyClick}
         id="button-addon2"
       >

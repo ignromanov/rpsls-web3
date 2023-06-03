@@ -11,9 +11,8 @@ const GameEnded = React.memo(() => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold text-violet-900">Checkmate</h1>
-      <p className="text-lg mt-2 text-violet-500">The game has ended.</p>
-      <p className="text-base mt-4 text-violet-600">Start a new game:</p>
+      <h1>Checkmate</h1>
+      <p className="text-lg my-2 text-violet-500">The game has ended.</p>
       <ActionButton isDisabled={false} onClickHandler={clickHandler}>
         Start New Game
       </ActionButton>

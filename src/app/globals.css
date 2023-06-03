@@ -20,3 +20,7 @@ body {
 input {
   @apply focus:outline-none border border-solid;
 }
+
+h1 {
+  @apply mb-3 text-2xl font-bold text-violet-900;
+}

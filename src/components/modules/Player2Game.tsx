@@ -30,10 +30,8 @@ const Player2Game: React.FC<Player2GameProps> = ({
   if (c2 === 0) {
     return (
       <>
-        <h1 className="text-2xl font-semibold mt-6 text-violet-900">
-          Duel in action!
-        </h1>
-        <p className="text-base mt-4 text-violet-600">Choose your move:</p>
+        <h1>Duel in action!</h1>
+        <p className="text-base my-2 text-violet-600">Choose your move:</p>
         <MoveSelector
           selectedMove={selectedMove}
           onMoveSelect={handleMoveSelect}

@@ -46,18 +46,16 @@ const PlayerWaiting: React.FC<PlayerWaitingProps> = ({
 
   return (
     <>
-      <h1 className="text-2xl font-semibold text-violet-900">
-        Duel in action!
-      </h1>
+      <h1>Duel in action!</h1>
       {isTimeoutButtonDisabled && (
         <>
-          <p className="text-base mt-4 text-violet-600">
+          <p className="text-base mt-2 text-violet-600">
             Share the link below with another player:
           </p>
           <CopyPageURL />
         </>
       )}
-      <p className="text-base mt-4 text-violet-600 text-center">
+      <p className="text-base my-2 text-violet-600 text-center">
         {isTimeoutButtonDisabled ? (
           <>
             Hang tight!
