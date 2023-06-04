@@ -7,7 +7,8 @@ enum Move {
 }
 
 interface GameData {
-  address: string | null;
+  chainId: string | null;
+  contractAddress: string | null;
   isGame: boolean | null;
   j1: string | null;
   j2: string | null;

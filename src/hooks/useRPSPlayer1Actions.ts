@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import useEncryption from "./useEncryption";
 import { RPS } from "@/contracts";
-import { GameData, Move, Player1SecretData } from "@/types";
+import { Move, Player1SecretData } from "@/types";
 import { shortenAddress } from "@/utils/shorten";
 import { ethers, BigNumber } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
@@ -14,10 +14,15 @@ import {
 import { deployContract } from "@/utils/contract";
 import { EthEncryptedData } from "@metamask/eth-sig-util";
 import { useWallet } from "@/contexts/WalletContext";
+import { useGameData } from "@/contexts/GameDataContext";
+import {
+  getFromLocalStorage,
+  putToLocalStorage,
+  removeFromLocalStorage,
+} from "@/utils/storage";
 
 type UseRPSPlayer1Actions = (input: {
   rpsContract: RPS | null;
-  gameData: GameData;
   incrementTransactionCount: () => void;
 }) => {
   startGame: (
@@ -28,15 +33,15 @@ type UseRPSPlayer1Actions = (input: {
     contractAddress: string | null;
     _secretToSave: Player1SecretData | EthEncryptedData | null;
   }>;
-  onSolve: () => Promise<void>;
+  onSolve: (_moveSecret: string | null) => Promise<void>;
   onJ2Timeout: () => Promise<void>;
 };
 
 const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
   rpsContract,
-  gameData,
   incrementTransactionCount,
 }) => {
+  const { gameData } = useGameData();
   const { provider, address, chainId } = useWallet();
   const { encryptMessage, decryptMessage } = useEncryption();
   const { setStatusMessage } = useStatusMessage();
@@ -55,6 +60,15 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
 
       if (!setStatusMessage || !provider)
         return { contractAddress, _secretToSave };
+
+      if (
+        !opponentAddress ||
+        parseInt(amount) <= 0 ||
+        !(selectedMove in Move)
+      ) {
+        setStatusMessage("Wrong input data. Try again.");
+        return { contractAddress, _secretToSave };
+      }
 
       if (address?.toLowerCase() === opponentAddress.toLowerCase()) {
         setStatusMessage("You can't play against yourself");
@@ -92,7 +106,11 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
         const encryptedData = await encryptMessage(messageToEncrypt);
         if (encryptedData) {
           _secretToSave = encryptedData;
-          localStorage.setItem(contractAddress, JSON.stringify(encryptedData));
+          putToLocalStorage(
+            chainId,
+            contractAddress,
+            JSON.stringify(encryptedData)
+          );
         } else {
           setStatusMessage("Error encrypting secret data");
           return {
@@ -126,72 +144,85 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
     ]
   );
 
-  const onSolve = useCallback(async () => {
-    if (!rpsContract || !setStatusMessage || !gameData.address || !provider)
-      return;
-
-    try {
-      setStatusMessage("Decrypting your move...");
-
-      const encryptedTurn = localStorage.getItem(gameData.address);
-      if (!encryptedTurn) {
-        setStatusMessage("Error: Encrypted move not found in localStorage.");
+  const onSolve = useCallback(
+    async (_moveSecret: string | null) => {
+      if (
+        !provider ||
+        !rpsContract ||
+        !setStatusMessage ||
+        !gameData.chainId ||
+        !gameData.contractAddress
+      )
         return;
-      }
 
-      const decryptedTurn = await decryptMessage(JSON.parse(encryptedTurn));
-      if (!decryptedTurn) {
-        setStatusMessage("Error decrypting move.");
-        return;
-      }
+      try {
+        setStatusMessage("Decrypting your move...");
+        const secretMove =
+          _moveSecret ??
+          getFromLocalStorage(gameData.chainId, gameData.contractAddress);
+        if (!secretMove) {
+          setStatusMessage("Error: Encrypted move not found in localStorage.");
+          return;
+        }
 
-      setStatusMessage("Checking the game's integrity...");
+        const parsedSecretMove: Player1SecretData | EthEncryptedData =
+          JSON.parse(secretMove);
+        const decryptedMove =
+          "move" in parsedSecretMove
+            ? parsedSecretMove
+            : await decryptMessage(JSON.parse(secretMove));
+        if (!decryptedMove) {
+          setStatusMessage("Error decrypting move.");
+          return;
+        }
 
-      const { move, salt, hash: originalHash } = decryptedTurn;
+        setStatusMessage("Checking the game's integrity...");
+        const { move, salt, hash: originalHash } = decryptedMove;
 
-      const providerChainId =
-        ((await provider.request<string>({
-          method: "eth_chainId",
-        })) as string) ?? "";
+        const providerChainId =
+          ((await provider.request<string>({
+            method: "eth_chainId",
+          })) as string) ?? "";
 
-      const currentHash = getHashedGame(
-        providerChainId,
-        rpsContract.address,
-        move,
-        BigNumber.from(salt)
-      );
-
-      if (currentHash !== originalHash) {
-        setStatusMessage(
-          "Error: The game's data does not match the original game."
+        const currentHash = getHashedGame(
+          providerChainId,
+          rpsContract.address,
+          move,
+          BigNumber.from(salt)
         );
-        return;
+
+        if (currentHash !== originalHash) {
+          setStatusMessage(
+            "Error: The game's data does not match the original game."
+          );
+          return;
+        }
+
+        setStatusMessage("Revealing your move...");
+        const tx = await rpsContract.solve(Move[move], BigNumber.from(salt));
+
+        setStatusMessage("Waiting for the transaction to be mined...");
+        await tx.wait();
+
+        removeFromLocalStorage(gameData.chainId, gameData.contractAddress);
+
+        setStatusMessage("Move revealed successfully.");
+        incrementTransactionCount();
+      } catch (error) {
+        console.error(error);
+        setStatusMessage(`Error revealing move: ${errorMessageHandler(error)}`);
       }
-
-      setStatusMessage("Revealing your move...");
-
-      const tx = await rpsContract.solve(Move[move], BigNumber.from(salt));
-
-      setStatusMessage("Waiting for the transaction to be mined...");
-
-      await tx.wait();
-
-      localStorage.removeItem(gameData.address);
-
-      setStatusMessage("Move revealed successfully.");
-      incrementTransactionCount();
-    } catch (error) {
-      console.error(error);
-      setStatusMessage(`Error revealing move: ${errorMessageHandler(error)}`);
-    }
-  }, [
-    rpsContract,
-    setStatusMessage,
-    gameData.address,
-    provider,
-    decryptMessage,
-    incrementTransactionCount,
-  ]);
+    },
+    [
+      provider,
+      rpsContract,
+      setStatusMessage,
+      gameData.chainId,
+      gameData.contractAddress,
+      decryptMessage,
+      incrementTransactionCount,
+    ]
+  );
 
   const onJ2Timeout = useCallback(async () => {
     if (!rpsContract || !setStatusMessage || !provider) return;

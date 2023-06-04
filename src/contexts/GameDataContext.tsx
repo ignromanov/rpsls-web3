@@ -1,9 +1,10 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { GameData } from "../types";
 
 interface GameDataContextData {
   gameData: GameData;
   setGameData: React.Dispatch<React.SetStateAction<GameData>>;
+  resetGameData: (providedData?: Partial<GameData>) => void;
 }
 
 const GameDataContext = createContext<GameDataContextData | undefined>(
@@ -14,23 +15,30 @@ interface GameDataProviderProps {
   children: React.ReactNode;
 }
 
+const defaultGameData: GameData = {
+  chainId: null,
+  contractAddress: null,
+  isGame: null,
+  j1: null,
+  j2: null,
+  c1Hash: null,
+  c2: 0,
+  stake: null,
+  timeout: 0,
+  lastAction: 0,
+};
+
 export const GameDataProvider: React.FC<GameDataProviderProps> = ({
   children,
 }) => {
-  const [gameData, setGameData] = useState<GameData>({
-    address: null,
-    isGame: null,
-    j1: null,
-    j2: null,
-    c1Hash: null,
-    c2: 0,
-    stake: null,
-    timeout: 0,
-    lastAction: 0,
-  });
+  const [gameData, setGameData] = useState<GameData>(defaultGameData);
+
+  const resetGameData = useCallback((providedData: Partial<GameData> = {}) => {
+    setGameData({ ...defaultGameData, ...providedData });
+  }, []);
 
   return (
-    <GameDataContext.Provider value={{ gameData, setGameData }}>
+    <GameDataContext.Provider value={{ gameData, setGameData, resetGameData }}>
       {children}
     </GameDataContext.Provider>
   );

@@ -1,11 +1,13 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useRPSContract from "../../hooks/useRPSContract";
-import { useRouter } from "next/router";
-import { Move } from "../../types";
+import { Move, Player1SecretData } from "../../types";
 import MoveSelector from "../elements/MoveSelector";
 import ActionButton from "../elements/ActionButton";
 import { ethers } from "ethers";
 import { useWallet } from "@/contexts/WalletContext";
+import { EthEncryptedData } from "@metamask/eth-sig-util";
+import SaveSecretData from "./SaveSecretData";
+import { useGameData } from "@/contexts/GameDataContext";
 
 const StartGame: React.FC = () => {
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
@@ -14,9 +16,14 @@ const StartGame: React.FC = () => {
     "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
   );
 
-  const { player1Actions } = useRPSContract({});
+  const { player1Actions } = useRPSContract();
   const { provider, chainId } = useWallet();
-  const router = useRouter();
+  const { resetGameData, setGameData } = useGameData();
+
+  useEffect(() => {
+    resetGameData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleMoveSelect = useCallback((move: Move) => {
     setSelectedMove(move);
@@ -48,7 +55,14 @@ const StartGame: React.FC = () => {
         const { contractAddress, _secretToSave } =
           await player1Actions.startGame(selectedMove, amount, opponentAddress);
         if (contractAddress) {
-          router.push(`/game/${chainId}/${contractAddress}`);
+          setContractAddress(contractAddress);
+          setGameData((prevGameData) => ({
+            ...prevGameData,
+            chainId,
+            contractAddress: contractAddress,
+            isGame: true,
+          }));
+          setSecretToSave(_secretToSave);
         }
       }
     },
@@ -58,10 +72,20 @@ const StartGame: React.FC = () => {
       amount,
       provider,
       player1Actions,
-      router,
+      setGameData,
       chainId,
     ]
   );
+
+  if (_secretToSave) {
+    return (
+      <SaveSecretData
+        _secretToSave={_secretToSave}
+        contractAddress={contractAddress}
+        chainId={chainId}
+      />
+    );
+  }
 
   const isDisabled =
     !selectedMove ||
