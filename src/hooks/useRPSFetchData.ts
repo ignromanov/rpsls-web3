@@ -1,21 +1,22 @@
+import { useGameData } from "@/contexts/GameDataContext";
 import { RPS } from "@/contracts";
-import { GameData } from "@/types";
 import { ethers } from "ethers";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 interface UseRPSFetchData {
   rpsContract: RPS | null;
-  setGameData: Dispatch<SetStateAction<GameData>>;
   transactionCount: number;
 }
 const useRPSFetchData = ({
   rpsContract,
-  setGameData,
   transactionCount,
 }: UseRPSFetchData) => {
+  const { gameData, setGameData } = useGameData();
+  const { chainId, contractAddress } = gameData;
+
   // fetch basic game data
-  useEffect(() => {
-    if (!rpsContract) return;
+  useLayoutEffect(() => {
+    if (!rpsContract || !contractAddress) return;
 
     const fetchBasicContractData = async () => {
       try {
@@ -43,11 +44,11 @@ const useRPSFetchData = ({
     };
     fetchBasicContractData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rpsContract]);
+  }, [rpsContract, chainId, contractAddress]);
 
   // fetch game changes
-  useEffect(() => {
-    if (!rpsContract) return;
+  useLayoutEffect(() => {
+    if (!rpsContract || !contractAddress) return;
 
     const fetchContractData = async () => {
       try {
@@ -91,7 +92,7 @@ const useRPSFetchData = ({
 
     return () => clearInterval(fetchInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rpsContract, transactionCount]);
+  }, [rpsContract, transactionCount, chainId, contractAddress]);
 };
 
 export default useRPSFetchData;

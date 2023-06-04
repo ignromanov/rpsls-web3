@@ -35,6 +35,9 @@ const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       return;
     }
 
+    setProvider(metamaskProvider);
+    connectWallet();
+
     metamaskProvider.on("accountsChanged", (accounts) => {
       setAddress((accounts as string[])[0]);
     });

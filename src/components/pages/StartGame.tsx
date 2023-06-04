@@ -87,7 +87,7 @@ const StartGame: React.FC = () => {
         <input
           type="number"
           step={1}
-          min={0}
+          min={1}
           value={amount}
           onChange={handleAmountChange}
           placeholder="Bet amount"

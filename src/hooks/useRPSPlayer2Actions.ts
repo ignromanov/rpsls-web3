@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 import { RPS } from "@/contracts";
-import { GameData, Move } from "@/types";
+import { Move } from "@/types";
 import { ethers } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
 import { errorMessageHandler } from "@/utils/errors";
 import { useWallet } from "@/contexts/WalletContext";
+import { useGameData } from "@/contexts/GameDataContext";
 
 type UseRPSPlayer2Actions = (params: {
   rpsContract: RPS | null;
-  gameData: GameData;
   incrementTransactionCount: () => void;
 }) => {
   onPlay: (move: Move) => void;
@@ -17,9 +17,9 @@ type UseRPSPlayer2Actions = (params: {
 
 const useRPSPlayer2Actions: UseRPSPlayer2Actions = ({
   rpsContract,
-  gameData,
   incrementTransactionCount,
 }) => {
+  const { gameData } = useGameData();
   const { provider } = useWallet();
   const { setStatusMessage } = useStatusMessage();
 

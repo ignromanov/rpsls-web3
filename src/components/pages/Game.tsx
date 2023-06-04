@@ -7,29 +7,23 @@ import GameEnded from "./GameEnded";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
 import { errorMessageHandler } from "@/utils/errors";
 import { useWallet } from "@/contexts/WalletContext";
+import { useGameData } from "@/contexts/GameDataContext";
+import { SpinnerIcon } from "../elements/Icons";
+import GameSteps from "../elements/GameSteps";
 
-interface GameProps {
-  chainId: string;
-  contractAddress: string;
-}
-
-const Game: React.FC<GameProps> = ({
-  chainId: gameChainId,
-  contractAddress,
-}) => {
+const Game: React.FC = () => {
   const { setStatusMessage } = useStatusMessage();
 
   const { address, provider, switchChainId, chainId } = useWallet();
-  const { gameData, player1Actions, player2Actions } = useRPSContract({
-    contractAddress,
-  });
+  const { gameData } = useGameData();
+  const { j1, j2, stake, isGame, chainId: gameChainId } = gameData;
+
+  const { player1Actions, player2Actions } = useRPSContract();
 
   const isChainMismatch = !!chainId && !!gameChainId && chainId !== gameChainId;
 
-  const { j1, j2, stake, isGame } = gameData;
-
   useEffect(() => {
-    const switchChain = async () => {
+    const switchChain = async (gameChainId: string) => {
       setStatusMessage("Switching networks...");
       try {
         await switchChainId(gameChainId);
@@ -40,8 +34,8 @@ const Game: React.FC<GameProps> = ({
       }
     };
 
-    if (isChainMismatch) {
-      switchChain();
+    if (gameChainId && isChainMismatch) {
+      switchChain(gameChainId);
       return;
     }
 
@@ -62,28 +56,27 @@ const Game: React.FC<GameProps> = ({
     isChainMismatch,
   ]);
 
-  if (isGame === null || isChainMismatch) return null;
+  if (isGame === null || isChainMismatch) return <SpinnerIcon />;
 
   if (!isGame) return <GameNotFound />;
 
-  if (stake === "0") return <GameEnded />;
-
+  const isGameEnded = stake === "0";
   return (
     <>
-      {j1?.toLowerCase() === address?.toLowerCase() && (
+      {isGameEnded && <GameEnded />}
+      {!isGameEnded && j1?.toLowerCase() === address?.toLowerCase() && (
         <Player1Game
           onSolve={player1Actions.onSolve}
           onJ2Timeout={player1Actions.onJ2Timeout}
-          gameData={gameData}
         />
       )}
-      {j2?.toLowerCase() === address?.toLowerCase() && (
+      {!isGameEnded && j2?.toLowerCase() === address?.toLowerCase() && (
         <Player2Game
           onPlay={player2Actions.onPlay}
           onJ1Timeout={player2Actions.onJ1Timeout}
-          gameData={gameData}
         />
       )}
+      <GameSteps />
     </>
   );
 };
