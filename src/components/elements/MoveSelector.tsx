@@ -11,7 +11,7 @@ const MoveSelector: React.FC<MoveSelectorProps> = ({
   onMoveSelect,
 }) => {
   return (
-    <div className="flex my-2 space-x-2">
+    <div className="flex my-2 space-x-2 justify-between content-between">
       {Object.values(Move).map((move, index) => {
         if (isNaN(Number(move))) {
           return (
@@ -21,7 +21,7 @@ const MoveSelector: React.FC<MoveSelectorProps> = ({
               title={move.toString()}
               alt={move.toString()}
               placeholder={"empty"}
-              className={`w-20 h-20 cursor-pointer border rounded-md ${
+              className={`w-12 h-12 sm:w-20 sm:h-20 cursor-pointer border rounded-md ${
                 selectedMove === move
                   ? "border-violet-800 border-2"
                   : "border-transparent"

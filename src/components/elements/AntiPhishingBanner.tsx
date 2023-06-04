@@ -21,7 +21,7 @@ const AntiPhishingBanner = memo(() => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 mx-8 mt-8 flex justify-center">
+    <div className="fixed top-0 left-auto right-auto mt-8 flex justify-center z-50">
       <div className="p-2 rounded bg-red-100 text-red-900 text-xs overflow-auto whitespace-normal flex items-center justify-between">
         <div className="text-center">
           <strong className="text-sm">PHISHING WARNING:</strong> <br />
