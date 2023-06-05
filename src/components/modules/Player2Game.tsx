@@ -32,8 +32,9 @@ const Player2Game: React.FC<Player2GameProps> = ({ onPlay, onJ1Timeout }) => {
       <>
         <h1>Duel in action!</h1>
         <p className="text-base my-2 text-violet-600 text-center">
-          Choose your move. The bet is{" "}
-          <span className="font-semibold">{stake} wei</span>.
+          The bet is <span className="font-semibold">{stake} wei</span>.
+          <br />
+          Choose your move.
           <br />
           You have {remainingSeconds}s left to make your move.
         </p>

@@ -21,26 +21,37 @@ const SaveSecretData: React.FC<SaveSecretDataProps> = ({
   if (!_secretToSave) return null;
   const unEncryptedSecret = "move" in _secretToSave;
 
-  let message: React.ReactNode;
+  let secretDataAlert: React.ReactNode;
   if (unEncryptedSecret) {
-    message = (
-      <p className="text-sm mt-2 bg-red-100 text-red-900 p-3 text-center">
-        <span className="text-orange-600 font-bold text-lg">💡 Crucial!</span>{" "}
+    secretDataAlert = (
+      <p className="text-sm my-4 bg-red-100 text-red-900 p-3 text-center shadow-xl">
+        <span className="text-orange-600 font-bold text-lg">🔐 ATTENTION!</span>{" "}
         <br />
-        The secret data for your move is neither encrypted nor stored anywhere!
+        Your secret game data is currently being encrypted.
         <br />
-        To avoid losing your funds, make sure to save this information
-        immediately
+        However, until the process is completed, it is not stored anywhere!
         <br />
-        and keep it safe until you need to reveal your move.
+        It&apos;s crucial to save and securely store this information
+        <br />
+        until you need to reveal your move.
+        <CopyInput
+          value={JSON.stringify(_secretToSave)}
+          className="mt-3"
+          type={unEncryptedSecret ? "password" : "text"}
+        />
       </p>
     );
   } else {
-    message = (
-      <p className="text-base mt-2 text-violet-600 text-center">
+    secretDataAlert = (
+      <p className="text-base my-2 text-violet-600 text-center">
         We&apos;ve encrypted and locally saved your move&apos;s secret data.
         <br />
         🛡️ Just in case, we recommend you to save it as well.
+        <CopyInput
+          value={JSON.stringify(_secretToSave)}
+          className="my-4"
+          type={unEncryptedSecret ? "password" : "text"}
+        />
       </p>
     );
   }
@@ -52,12 +63,7 @@ const SaveSecretData: React.FC<SaveSecretDataProps> = ({
   return (
     <>
       <h1>Save Your Secret Data</h1>
-      {message}
-      <CopyInput
-        value={JSON.stringify(_secretToSave)}
-        className="my-3"
-        type={unEncryptedSecret ? "password" : "text"}
-      />
+      {secretDataAlert}
       <ActionButton onClickHandler={handleContinue} isDisabled={false}>
         {unEncryptedSecret ? "I've saved the data" : "Continue"}
       </ActionButton>

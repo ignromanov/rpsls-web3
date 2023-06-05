@@ -14,15 +14,15 @@ const ActionButton: React.FC<StartGameButtonProps> = ({
   return (
     <button
       type="button"
-      className={`w-full mt-2 p-2 font-semibold rounded ${
+      className={`relative overflow-hidden  w-full mt-2 p-2 font-semibold rounded  ${
         isDisabled
-          ? "bg-violet-300 text-gray-700 cursor-not-allowed"
-          : "bg-violet-700 text-white hover:bg-violet-600"
+          ? "text-gray-700 cursor-not-allowed bg-violet-300"
+          : "text-white hover:bg-violet-600 bg-violet-700"
       }`}
       onClick={onClickHandler}
       disabled={isDisabled}
     >
-      {children}
+      <span className="relative">{children}</span>
     </button>
   );
 };

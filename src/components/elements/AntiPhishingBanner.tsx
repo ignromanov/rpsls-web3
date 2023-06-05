@@ -21,19 +21,19 @@ const AntiPhishingBanner = memo(() => {
   }
 
   return (
-    <div className="fixed top-0 left-auto right-auto mt-8 flex justify-center z-50">
-      <div className="p-2 rounded bg-red-100 text-red-900 text-xs overflow-auto whitespace-normal flex items-center justify-between">
+    <div className="fixed top-0 left-auto right-auto mt-8 bg-red-100 flex justify-center z-50 shadow-lg">
+      <div className="p-2 rounded  text-red-900 text-xs overflow-auto whitespace-normal flex items-center justify-between">
         <div className="text-center">
-          <strong className="text-sm">PHISHING WARNING:</strong> <br />
           Be vigilant! <br />
+          <strong className="text-sm">PHISHING WARNING:</strong> <br />
           Ensure you&apos;re visiting the authentic site:{" "}
           <strong>{APP_HOST}</strong>. <br />
           Stay safe from phishing attacks!
         </div>
-        <button onClick={closeBanner} className="ml-4">
-          ✖
-        </button>
       </div>
+      <button onClick={closeBanner} className="relative h-min top-1 right-2">
+        ✖
+      </button>
     </div>
   );
 });

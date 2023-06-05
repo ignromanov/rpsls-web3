@@ -9,7 +9,7 @@ interface RevealMoveProps {
 }
 
 export const RevealMove: React.FC<RevealMoveProps> = ({ onSolve }) => {
-  const [secretSaved, setSecretSaved] = React.useState(true);
+  const [isSecretSaved, setIsSecretSaved] = React.useState(true);
   const [_moveSecret, setMoveSecret] = React.useState<string | null>(null);
 
   const { remainingSeconds } = useGameTimeout();
@@ -18,7 +18,7 @@ export const RevealMove: React.FC<RevealMoveProps> = ({ onSolve }) => {
   useEffect(() => {
     if (!gameData.chainId || !gameData.contractAddress) return;
     if (!isInLocalStorage(gameData.chainId, gameData.contractAddress)) {
-      setSecretSaved(false);
+      setIsSecretSaved(false);
     }
   }, [gameData, onSolve]);
 
@@ -34,12 +34,12 @@ export const RevealMove: React.FC<RevealMoveProps> = ({ onSolve }) => {
         <br />
         You have {remainingSeconds}s left to make your move.
       </p>
-      {!secretSaved && (
-        <>
-          <p className="text-base mt-2 text-violet-600 text-center">
-            It seems we couldn&apos;t find your saved move.
+      {!isSecretSaved && (
+        <div className="text-sm my-2 bg-red-100 text-red-900 p-3 text-center shadow-xl">
+          <p className="text-center">
+            🚫 We were unable to locate your previously saved move.
             <br />
-            Please, enter the move you&apos;ve saved earlier.
+            Please input the move you saved earlier.
           </p>
           <input
             type="text"
@@ -48,10 +48,10 @@ export const RevealMove: React.FC<RevealMoveProps> = ({ onSolve }) => {
             placeholder="Your saved move"
             className={`w-full p-2 my-2 rounded border-violet-400`}
           />
-        </>
+        </div>
       )}
       <ActionButton
-        isDisabled={!secretSaved && !_moveSecret}
+        isDisabled={!isSecretSaved && !_moveSecret}
         onClickHandler={handleRevealMove}
       >
         Reveal Move

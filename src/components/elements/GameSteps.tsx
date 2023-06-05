@@ -7,16 +7,21 @@ import useGameTimeout from "@/hooks/useGameTimeout";
 interface StepProps {
   title: string;
   isFilled: boolean;
+  isCurrent: boolean;
   IconComponent: React.ElementType;
 }
 
 const Step: React.FC<StepProps> = React.memo(
-  ({ IconComponent, isFilled, title }) => {
+  ({ IconComponent, isFilled, isCurrent, title }) => {
     return (
       <li className="flex items-center relative" title={title}>
         <span
           className={`flex items-center justify-center w-10 h-10 ${
-            isFilled ? "bg-violet-500" : "bg-violet-300"
+            isFilled
+              ? "bg-violet-500"
+              : isCurrent
+              ? "bg-violet-300"
+              : "bg-violet-100"
           } rounded-full shrink-0`}
         >
           <IconComponent
@@ -38,7 +43,7 @@ const Progress: React.FC<ProgressProps> = React.memo(({ percentRemain }) => {
     <li className="flex items-center relative h-1 w-full">
       <div
         className={
-          "absolute inline-block h-1 w-full left-0 top-auto bottom-auto bg-violet-300"
+          "absolute inline-block h-1 w-full left-0 top-auto bottom-auto bg-violet-100"
         }
       />
       <div
@@ -87,6 +92,7 @@ const GameSteps: React.FC = () => {
       <Step
         key={GameStep.Player1Move}
         isFilled={currentStep > GameStep.Player1Move}
+        isCurrent={currentStep === GameStep.Player1Move}
         title={"Player 1's Move"}
         IconComponent={HandRaisedIcon}
       />
@@ -102,6 +108,7 @@ const GameSteps: React.FC = () => {
       <Step
         key={GameStep.Player2Move}
         isFilled={currentStep > GameStep.Player2Move}
+        isCurrent={currentStep === GameStep.Player2Move}
         title={"Player 2's Move"}
         IconComponent={HandRaisedIcon}
       />
@@ -117,6 +124,7 @@ const GameSteps: React.FC = () => {
       <Step
         key={GameStep.Player1Reveal}
         isFilled={currentStep >= GameStep.Finished}
+        isCurrent={[GameStep.Finished, GameStep.Timeout].includes(currentStep)}
         title={"Reveal Player 1's Move"}
         IconComponent={EyeIcon}
       />

@@ -23,7 +23,7 @@ const CopyInput: React.FC<CopyInputProps> = ({
     <div className={`relative flex items-stretch w-full ${className}`}>
       <input
         type={type}
-        className="relative flex-grow min-w-0 block p-1 rounded-l border-violet-400 text-xs"
+        className="relative flex-grow min-w-0 block p-2 rounded-l border-violet-400 text-xs"
         value={value}
         readOnly={true}
         aria-label="Current page URL"
@@ -31,7 +31,7 @@ const CopyInput: React.FC<CopyInputProps> = ({
       />
       <button
         type="button"
-        className="z-[2] inline-block rounded-r bg-primary px-3 py-1 text-xs font-medium uppercase leading-tight bg-violet-700 text-white hover:bg-violet-600"
+        className="z-[2] inline-block rounded-r bg-primary px-3 py-2 text-xs font-medium uppercase leading-tight bg-violet-700 text-white hover:bg-violet-600"
         onClick={handleCopyClick}
         id="button-addon2"
       >
