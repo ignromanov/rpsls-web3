@@ -14,7 +14,11 @@ import type {
   Signer,
   utils,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
+import type {
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   TypedEventFilter,
@@ -22,9 +26,9 @@ import type {
   TypedListener,
   OnEvent,
   PromiseOrValue,
-} from "./common";
+} from "../common";
 
-export interface RPSInterface extends utils.Interface {
+export interface RPSV2Interface extends utils.Interface {
   functions: {
     "win(uint8,uint8)": FunctionFragment;
     "j2Timeout()": FunctionFragment;
@@ -32,6 +36,7 @@ export interface RPSInterface extends utils.Interface {
     "c2()": FunctionFragment;
     "c1Hash()": FunctionFragment;
     "play(uint8)": FunctionFragment;
+    "c1()": FunctionFragment;
     "j2()": FunctionFragment;
     "lastAction()": FunctionFragment;
     "solve(uint8,uint256)": FunctionFragment;
@@ -48,6 +53,7 @@ export interface RPSInterface extends utils.Interface {
       | "c2"
       | "c1Hash"
       | "play"
+      | "c1"
       | "j2"
       | "lastAction"
       | "solve"
@@ -68,6 +74,7 @@ export interface RPSInterface extends utils.Interface {
     functionFragment: "play",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
+  encodeFunctionData(functionFragment: "c1", values?: undefined): string;
   encodeFunctionData(functionFragment: "j2", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "lastAction",
@@ -87,6 +94,7 @@ export interface RPSInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "c2", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "c1Hash", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "play", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "c1", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "j2", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "lastAction", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "solve", data: BytesLike): Result;
@@ -94,15 +102,66 @@ export interface RPSInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "j1Timeout", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "TIMEOUT", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "GameStarted(bytes32,address)": EventFragment;
+    "MoveMade(uint8)": EventFragment;
+    "GameSolved(uint8,uint256)": EventFragment;
+    "J1TimedOut()": EventFragment;
+    "J2TimedOut()": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "GameStarted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MoveMade"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GameSolved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "J1TimedOut"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "J2TimedOut"): EventFragment;
 }
 
-export interface RPS extends BaseContract {
+export interface GameStartedEventObject {
+  _c1Hash: string;
+  _j2: string;
+}
+export type GameStartedEvent = TypedEvent<
+  [string, string],
+  GameStartedEventObject
+>;
+
+export type GameStartedEventFilter = TypedEventFilter<GameStartedEvent>;
+
+export interface MoveMadeEventObject {
+  _c2: number;
+}
+export type MoveMadeEvent = TypedEvent<[number], MoveMadeEventObject>;
+
+export type MoveMadeEventFilter = TypedEventFilter<MoveMadeEvent>;
+
+export interface GameSolvedEventObject {
+  _c1: number;
+  _salt: BigNumber;
+}
+export type GameSolvedEvent = TypedEvent<
+  [number, BigNumber],
+  GameSolvedEventObject
+>;
+
+export type GameSolvedEventFilter = TypedEventFilter<GameSolvedEvent>;
+
+export interface J1TimedOutEventObject {}
+export type J1TimedOutEvent = TypedEvent<[], J1TimedOutEventObject>;
+
+export type J1TimedOutEventFilter = TypedEventFilter<J1TimedOutEvent>;
+
+export interface J2TimedOutEventObject {}
+export type J2TimedOutEvent = TypedEvent<[], J2TimedOutEventObject>;
+
+export type J2TimedOutEventFilter = TypedEventFilter<J2TimedOutEvent>;
+
+export interface RPSV2 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: RPSInterface;
+  interface: RPSV2Interface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -145,6 +204,8 @@ export interface RPS extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    c1(overrides?: CallOverrides): Promise<[number]>;
+
     j2(overrides?: CallOverrides): Promise<[string]>;
 
     lastAction(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -185,6 +246,8 @@ export interface RPS extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  c1(overrides?: CallOverrides): Promise<number>;
+
   j2(overrides?: CallOverrides): Promise<string>;
 
   lastAction(overrides?: CallOverrides): Promise<BigNumber>;
@@ -223,6 +286,8 @@ export interface RPS extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    c1(overrides?: CallOverrides): Promise<number>;
+
     j2(overrides?: CallOverrides): Promise<string>;
 
     lastAction(overrides?: CallOverrides): Promise<BigNumber>;
@@ -240,7 +305,28 @@ export interface RPS extends BaseContract {
     TIMEOUT(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
-  filters: {};
+  filters: {
+    "GameStarted(bytes32,address)"(
+      _c1Hash?: null,
+      _j2?: null
+    ): GameStartedEventFilter;
+    GameStarted(_c1Hash?: null, _j2?: null): GameStartedEventFilter;
+
+    "MoveMade(uint8)"(_c2?: null): MoveMadeEventFilter;
+    MoveMade(_c2?: null): MoveMadeEventFilter;
+
+    "GameSolved(uint8,uint256)"(
+      _c1?: null,
+      _salt?: null
+    ): GameSolvedEventFilter;
+    GameSolved(_c1?: null, _salt?: null): GameSolvedEventFilter;
+
+    "J1TimedOut()"(): J1TimedOutEventFilter;
+    J1TimedOut(): J1TimedOutEventFilter;
+
+    "J2TimedOut()"(): J2TimedOutEventFilter;
+    J2TimedOut(): J2TimedOutEventFilter;
+  };
 
   estimateGas: {
     win(
@@ -263,6 +349,8 @@ export interface RPS extends BaseContract {
       _c2: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    c1(overrides?: CallOverrides): Promise<BigNumber>;
 
     j2(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -304,6 +392,8 @@ export interface RPS extends BaseContract {
       _c2: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    c1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     j2(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

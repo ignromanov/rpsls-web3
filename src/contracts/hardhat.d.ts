@@ -20,6 +20,14 @@ declare module "hardhat/types/runtime" {
       name: "RPS",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RPS__factory>;
+    getContractFactory(
+      name: "Hasher",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Hasher__factory>;
+    getContractFactory(
+      name: "RPSV2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.RPSV2__factory>;
 
     getContractAt(
       name: "Hasher",
@@ -31,6 +39,16 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.RPS>;
+    getContractAt(
+      name: "Hasher",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Hasher>;
+    getContractAt(
+      name: "RPSV2",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.RPSV2>;
 
     // default types
     getContractFactory(
