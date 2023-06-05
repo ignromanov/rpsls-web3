@@ -29,3 +29,24 @@ export const checkRPSVersion = (RPSContract: RPS | RPSV2) => {
   }
   return RPSVersion.RPS;
 };
+
+export const checkWinner = async (
+  contract: RPS | RPSV2,
+  { c1, c2, j1, j2 }: GameData
+) => {
+  let winner: string | undefined | null = null;
+
+  if (!c1 || !c2 || !j1 || !j2) {
+    return winner;
+  }
+
+  if (await contract.win(c1, c2)) {
+    winner = j1;
+  } else if (await contract.win(c2, c1)) {
+    winner = j2;
+  } else {
+    winner = undefined;
+  }
+
+  return winner;
+};

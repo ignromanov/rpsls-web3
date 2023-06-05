@@ -124,7 +124,9 @@ const GameSteps: React.FC = () => {
       <Step
         key={GameStep.Player1Reveal}
         isFilled={currentStep >= GameStep.Finished}
-        isCurrent={[GameStep.Finished, GameStep.Timeout].includes(currentStep)}
+        isCurrent={[GameStep.Player1Reveal, GameStep.Timeout].includes(
+          currentStep
+        )}
         title={"Reveal Player 1's Move"}
         IconComponent={EyeIcon}
       />

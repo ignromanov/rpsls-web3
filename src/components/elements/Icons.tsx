@@ -98,7 +98,7 @@ const SpinnerIcon = React.memo(() => {
     <div role="status">
       <svg
         aria-hidden="true"
-        className="inline w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-violet-600"
+        className="inline w-10 h-10 mr-2 text-gray-200 animate-spin fill-violet-600"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -117,6 +117,62 @@ const SpinnerIcon = React.memo(() => {
   );
 });
 SpinnerIcon.displayName = "SpinnerIcon";
+
+export function ArrowLeftIcon(props: SVGAttributes<SVGElement>) {
+  return (
+    <svg
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+      />
+    </svg>
+  );
+}
+
+export function ArrowRightIcon(props: SVGAttributes<SVGElement>) {
+  return (
+    <svg
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+      />
+    </svg>
+  );
+}
+
+export function MinusIcon(props: SVGAttributes<SVGElement>) {
+  return (
+    <svg
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      {...props}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+    </svg>
+  );
+}
 
 const MetamaskIcon: React.FC = React.memo(() => {
   return (
