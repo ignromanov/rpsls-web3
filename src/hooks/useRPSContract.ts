@@ -38,6 +38,7 @@ const useRPSContract = () => {
   return {
     player1Actions,
     player2Actions,
+    rpsContract,
   };
 };
 

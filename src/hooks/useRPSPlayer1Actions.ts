@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import useEncryption from "./useEncryption";
-import { RPS } from "@/contracts";
-import { Move, Player1SecretData } from "@/types";
+import { RPS, RPSV2 } from "@/contracts";
+import { Move, Player1SecretData, RPSVersion } from "@/types";
 import { shortenAddress } from "@/utils/shorten";
 import { ethers, BigNumber } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
@@ -22,17 +22,18 @@ import {
 } from "@/utils/storage";
 
 type UseRPSPlayer1Actions = (input: {
-  rpsContract: RPS | null;
+  rpsContract: RPS | RPSV2 | null;
   incrementTransactionCount: () => void;
 }) => {
   startGame: (
     selectedMove: Move,
     amount: string,
-    opponentAddress: string
-  ) => Promise<{
-    contractAddress: string | null;
-    _secretToSave: Player1SecretData | EthEncryptedData | null;
-  }>;
+    opponentAddress: string,
+    contractVersion: RPSVersion,
+    _setSecretState: React.Dispatch<
+      React.SetStateAction<Player1SecretData | EthEncryptedData | null>
+    >
+  ) => Promise<void>;
   onSolve: (_moveSecret: string | null) => Promise<void>;
   onJ2Timeout: () => Promise<void>;
 };

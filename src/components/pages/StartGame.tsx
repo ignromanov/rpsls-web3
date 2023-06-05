@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import useRPSContract from "../../hooks/useRPSContract";
-import { Move, Player1SecretData } from "../../types";
+import useRPSContract from "@/hooks/useRPSContract";
+import { Move, Player1SecretData, RPSVersion } from "@/types";
 import MoveSelector from "../elements/MoveSelector";
 import ActionButton from "../elements/ActionButton";
 import { ethers } from "ethers";
@@ -8,21 +8,27 @@ import { useWallet } from "@/contexts/WalletContext";
 import { EthEncryptedData } from "@metamask/eth-sig-util";
 import SaveSecretData from "./SaveSecretData";
 import { useGameData } from "@/contexts/GameDataContext";
+import ContractToggler from "../elements/ContractToggler";
+import React from "react";
 
 const StartGame: React.FC = () => {
-  const [selectedMove, setSelectedMove] = useState<Move | null>(null);
-  const [amount, setAmount] = useState("1");
-  const [opponentAddress, setOpponentAddress] = useState(
-    "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
-  );
-  const [_secretToSave, setSecretToSave] = useState<
-    Player1SecretData | EthEncryptedData | null
-  >(null);
-  const [contractAddress, setContractAddress] = useState("");
-
   const { player1Actions } = useRPSContract();
   const { provider, chainId } = useWallet();
-  const { resetGameData, setGameData } = useGameData();
+  const {
+    gameData: { contractAddress },
+    resetGameData,
+  } = useGameData();
+
+  const [opponentAddress, setOpponentAddress] = useState("");
+  const [amount, setAmount] = useState("1");
+  const [selectedMove, setSelectedMove] = useState<Move | null>(null);
+  const [contractVersion, setContractVersion] = React.useState<RPSVersion>(
+    RPSVersion.RPS
+  );
+
+  const [_secretToSave, _setSecretToSave] = useState<
+    Player1SecretData | EthEncryptedData | null
+  >(null);
 
   useEffect(() => {
     resetGameData();
@@ -56,18 +62,13 @@ const StartGame: React.FC = () => {
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (selectedMove && opponentAddress && amount && provider) {
-        const { contractAddress, _secretToSave } =
-          await player1Actions.startGame(selectedMove, amount, opponentAddress);
-        if (contractAddress) {
-          setContractAddress(contractAddress);
-          setGameData((prevGameData) => ({
-            ...prevGameData,
-            chainId,
-            contractAddress: contractAddress,
-            isGame: true,
-          }));
-          setSecretToSave(_secretToSave);
-        }
+        await player1Actions.startGame(
+          selectedMove,
+          amount,
+          opponentAddress,
+          contractVersion,
+          _setSecretToSave
+        );
       }
     },
     [
@@ -76,12 +77,11 @@ const StartGame: React.FC = () => {
       amount,
       provider,
       player1Actions,
-      setGameData,
-      chainId,
+      contractVersion,
     ]
   );
 
-  if (_secretToSave) {
+  if (_secretToSave && contractAddress) {
     return (
       <SaveSecretData
         _secretToSave={_secretToSave}
@@ -128,6 +128,10 @@ const StartGame: React.FC = () => {
       <MoveSelector
         selectedMove={selectedMove}
         onMoveSelect={handleMoveSelect}
+      />
+      <ContractToggler
+        contractVersion={contractVersion}
+        setContractVersion={setContractVersion}
       />
       <ActionButton isDisabled={isDisabled} onClickHandler={handleStartGame}>
         Start Game

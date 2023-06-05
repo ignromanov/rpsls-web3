@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useState } from "react";
-import { GameData } from "../types";
+import { GameData, RPSVersion } from "../types";
 
 interface GameDataContextData {
   gameData: GameData;
@@ -18,11 +18,14 @@ interface GameDataProviderProps {
 const defaultGameData: GameData = {
   chainId: null,
   contractAddress: null,
+  contractVersion: RPSVersion.RPSV2,
   isGame: null,
   j1: null,
   j2: null,
   c1Hash: null,
+  c1: 0,
   c2: 0,
+  winner: null,
   stake: null,
   timeout: 0,
   lastAction: 0,

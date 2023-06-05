@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { RPS } from "@/contracts";
+import { RPS, RPSV2 } from "@/contracts";
 import { Move } from "@/types";
 import { ethers } from "ethers";
 import { useStatusMessage } from "@/contexts/StatusMessageContext";
@@ -8,7 +8,7 @@ import { useWallet } from "@/contexts/WalletContext";
 import { useGameData } from "@/contexts/GameDataContext";
 
 type UseRPSPlayer2Actions = (params: {
-  rpsContract: RPS | null;
+  rpsContract: RPS | RPSV2 | null;
   incrementTransactionCount: () => void;
 }) => {
   onPlay: (move: Move) => void;

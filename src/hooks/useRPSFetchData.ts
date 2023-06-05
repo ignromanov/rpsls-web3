@@ -1,10 +1,12 @@
 import { useGameData } from "@/contexts/GameDataContext";
-import { RPS } from "@/contracts";
+import { RPS, RPSV2 } from "@/contracts";
+import { RPSVersion } from "@/types";
+import { checkWinner } from "@/utils/contract";
 import { ethers } from "ethers";
 import { useLayoutEffect } from "react";
 
 interface UseRPSFetchData {
-  rpsContract: RPS | null;
+  rpsContract: RPS | RPSV2 | null;
   transactionCount: number;
 }
 const useRPSFetchData = ({
@@ -12,65 +14,60 @@ const useRPSFetchData = ({
   transactionCount,
 }: UseRPSFetchData) => {
   const { gameData, setGameData } = useGameData();
-  const { chainId, contractAddress } = gameData;
+  const { chainId, contractAddress, contractVersion } = gameData;
 
-  // fetch basic game data
-  useLayoutEffect(() => {
-    if (!rpsContract || !contractAddress) return;
-
-    const fetchBasicContractData = async () => {
-      try {
-        const [j1, j2, c1Hash, timeout] = await Promise.all([
-          rpsContract.j1(),
-          rpsContract.j2(),
-          rpsContract.c1Hash(),
-          rpsContract.TIMEOUT(),
-        ]);
-        setGameData((prevGameData) => ({
-          ...prevGameData,
-          isGame: true,
-          j1,
-          j2,
-          c1Hash,
-          timeout: timeout.toNumber(),
-        }));
-      } catch (error) {
-        console.error(error);
-        setGameData((prevGameData) => ({
-          ...prevGameData,
-          isGame: false,
-        }));
-      }
-    };
-    fetchBasicContractData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rpsContract, chainId, contractAddress]);
-
-  // fetch game changes
   useLayoutEffect(() => {
     if (!rpsContract || !contractAddress) return;
 
     const fetchContractData = async () => {
       try {
-        const [c2, stake, lastAction] = await Promise.all([
-          rpsContract.c2(),
-          rpsContract.stake(),
-          rpsContract.lastAction(),
-        ]);
+        const [c1, c2, stake, lastAction, j1, j2, c1Hash, timeout] =
+          await Promise.all([
+            contractVersion === RPSVersion.RPSV2
+              ? (rpsContract as RPSV2).c1()
+              : 0,
+            rpsContract.c2(),
+            rpsContract.stake(),
+            rpsContract.lastAction(),
+            rpsContract.j1(),
+            rpsContract.j2(),
+            rpsContract.c1Hash(),
+            rpsContract.TIMEOUT(),
+          ]);
+        const winner = await checkWinner(rpsContract, {
+          ...gameData,
+          c1,
+          c2,
+          j1,
+          j2,
+        });
 
         setGameData((prevGameData) => {
           const newLastAction = lastAction.toNumber();
           const newStake = ethers.utils.formatUnits(stake, "wei");
           if (
+            prevGameData.c1 !== c1 ||
             prevGameData.c2 !== c2 ||
             prevGameData.lastAction !== newLastAction ||
-            prevGameData.stake !== newStake
+            prevGameData.stake !== newStake ||
+            prevGameData.winner !== winner ||
+            prevGameData.j1 !== j1 ||
+            prevGameData.j2 !== j2 ||
+            prevGameData.c1Hash !== c1Hash ||
+            prevGameData.timeout !== timeout.toNumber()
           ) {
             return {
               ...prevGameData,
+              c1,
               c2,
+              winner,
               stake: newStake,
               lastAction: newLastAction,
+              isGame: true,
+              j1,
+              j2,
+              c1Hash,
+              timeout: timeout.toNumber(),
             };
           }
 
@@ -84,6 +81,7 @@ const useRPSFetchData = ({
         }));
       }
     };
+    console.log("fetchContractData", gameData);
 
     fetchContractData();
     const fetchInterval = setInterval(() => {
