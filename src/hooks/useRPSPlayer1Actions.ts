@@ -42,7 +42,7 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
   rpsContract,
   incrementTransactionCount,
 }) => {
-  const { gameData } = useGameData();
+  const { gameData, setGameData } = useGameData();
   const { provider, address, chainId } = useWallet();
   const { encryptMessage, decryptMessage } = useEncryption();
   const { setStatusMessage } = useStatusMessage();
@@ -51,16 +51,17 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
     async (
       selectedMove: Move,
       amount: string,
-      opponentAddress: string
-    ): Promise<{
-      contractAddress: string | null;
-      _secretToSave: Player1SecretData | EthEncryptedData | null;
-    }> => {
+      opponentAddress: string,
+      contractVersion: RPSVersion,
+      _setSecretState: React.Dispatch<
+        React.SetStateAction<Player1SecretData | EthEncryptedData | null>
+      >
+    ) => {
       let contractAddress: string | null = null;
       let _secretToSave: Player1SecretData | EthEncryptedData | null = null;
+      _setSecretState(_secretToSave);
 
-      if (!setStatusMessage || !provider)
-        return { contractAddress, _secretToSave };
+      if (!setStatusMessage || !provider) return;
 
       if (
         !opponentAddress ||
@@ -68,12 +69,12 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
         !(selectedMove in Move)
       ) {
         setStatusMessage("Wrong input data. Try again.");
-        return { contractAddress, _secretToSave };
+        return;
       }
 
       if (address?.toLowerCase() === opponentAddress.toLowerCase()) {
         setStatusMessage("You can't play against yourself");
-        return { contractAddress, _secretToSave };
+        return;
       }
 
       incrementTransactionCount();
@@ -82,10 +83,12 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
         const salt = ethers.BigNumber.from(ethers.utils.randomBytes(32));
         const hashedMove = hashSaltedMove(parseInt(Move[selectedMove]), salt);
         _secretToSave = prepareMessageToSave(selectedMove, salt);
+        _setSecretState(_secretToSave);
 
         setStatusMessage("Deploying the contract...");
         const rpsContract = await deployContract(
           provider,
+          contractVersion,
           hashedMove,
           opponentAddress,
           amount
@@ -94,6 +97,13 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
         setStatusMessage("Waiting for the contract to be deployed...");
         await rpsContract.deployed();
         contractAddress = rpsContract.address;
+        setGameData((prevGameData) => ({
+          ...prevGameData,
+          contractVersion,
+          chainId,
+          contractAddress,
+          isGame: true,
+        }));
 
         setStatusMessage("Encrypting secret...");
         const messageToEncrypt = prepareMessageToSave(
@@ -103,10 +113,13 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
           contractAddress
         );
         _secretToSave = messageToEncrypt;
+        _setSecretState(_secretToSave);
 
         const encryptedData = await encryptMessage(messageToEncrypt);
         if (encryptedData) {
           _secretToSave = encryptedData;
+          _setSecretState(_secretToSave);
+
           putToLocalStorage(
             chainId,
             contractAddress,
@@ -114,10 +127,7 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
           );
         } else {
           setStatusMessage("Error encrypting secret data");
-          return {
-            contractAddress,
-            _secretToSave,
-          };
+          return;
         }
 
         setStatusMessage(
@@ -125,14 +135,12 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
             rpsContract.address
           )}`
         );
-
-        return { contractAddress, _secretToSave };
       } catch (error) {
         console.error(error);
         setStatusMessage(
           `Error starting the game: ${errorMessageHandler(error)}`
         );
-        return { contractAddress, _secretToSave };
+        return;
       }
     },
     [
@@ -142,6 +150,7 @@ const useRPSPlayer1Actions: UseRPSPlayer1Actions = ({
       incrementTransactionCount,
       provider,
       setStatusMessage,
+      setGameData,
     ]
   );
 

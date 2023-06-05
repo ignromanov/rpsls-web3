@@ -81,7 +81,6 @@ const useRPSFetchData = ({
         }));
       }
     };
-    console.log("fetchContractData", gameData);
 
     fetchContractData();
     const fetchInterval = setInterval(() => {
