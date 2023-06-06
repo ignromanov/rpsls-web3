@@ -7,7 +7,7 @@ const StatusMessage: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-auto right-auto mx-8 mb-8 flex justify-center z-20 shadow-md">
-      <div className="p-2 rounded bg-violet-100 text-violet-900 overflow-auto whitespace-normal">
+      <div className="p-2 max-w-[100vw] rounded bg-violet-100 text-violet-900 overflow-auto whitespace-normal">
         {statusMessage}
       </div>
     </div>

@@ -14,7 +14,7 @@ const CardLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <AntiPhishingBanner />
-      <div className="w-150 p-6 bg-violet-200 rounded-lg shadow-md">
+      <div className="w-150 p-6 bg-violet-200 rounded-lg drop-shadow-2xl">
         <div className="flex flex-col items-center justify-center">
           {!provider && <WalletButton />}
           {provider && children}

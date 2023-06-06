@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import useRPSContract from "@/hooks/useRPSContract";
 import { Move, Player1SecretData, RPSVersion } from "@/types";
 import MoveSelector from "../elements/MoveSelector";
