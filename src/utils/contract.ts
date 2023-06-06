@@ -15,19 +15,22 @@ export const deployContract = async (
   );
   const signer = ethersProvider.getSigner();
   const rpsFactory =
-    contractVersion === RPSVersion.RPS
-      ? new RPS__factory(signer)
-      : new RPSV2__factory(signer);
+    contractVersion === RPSVersion.RPSV2
+      ? new RPSV2__factory(signer)
+      : new RPS__factory(signer);
   return rpsFactory.deploy(hashedMove, opponentAddress, {
     value: ethers.utils.parseUnits(amount, "wei"),
   });
 };
 
-export const checkRPSVersion = (RPSContract: RPS | RPSV2) => {
-  if ("c2" in RPSContract) {
+export const checkRPSVersion = (bytecode: string) => {
+  if (bytecode.includes(ethers.utils.id("c1()").slice(2, 10))) {
     return RPSVersion.RPSV2;
+  } else if (bytecode.includes(ethers.utils.id("c2()").slice(2, 10))) {
+    return RPSVersion.RPS;
+  } else {
+    return undefined;
   }
-  return RPSVersion.RPS;
 };
 
 export const checkWinner = async (

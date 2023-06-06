@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import useRPSContract from "@/hooks/useRPSContract";
 import { Move, Player1SecretData, RPSVersion } from "@/types";
 import MoveSelector from "../elements/MoveSelector";
@@ -20,7 +20,7 @@ const StartGame: React.FC = () => {
   } = useGameData();
 
   const [opponentAddress, setOpponentAddress] = useState("");
-  const [amount, setAmount] = useState("1");
+  const [amount, setAmount] = useState("");
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
   const [contractVersion, setContractVersion] = React.useState<RPSVersion>(
     RPSVersion.RPS
@@ -30,7 +30,7 @@ const StartGame: React.FC = () => {
     Player1SecretData | EthEncryptedData | null
   >(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     resetGameData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

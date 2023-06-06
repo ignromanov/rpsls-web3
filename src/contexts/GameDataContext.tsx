@@ -18,7 +18,7 @@ interface GameDataProviderProps {
 const defaultGameData: GameData = {
   chainId: null,
   contractAddress: null,
-  contractVersion: RPSVersion.RPSV2,
+  contractVersion: RPSVersion.RPS,
   isGame: null,
   j1: null,
   j2: null,

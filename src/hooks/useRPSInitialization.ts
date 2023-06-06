@@ -88,19 +88,30 @@ const useRPSInitialization = (): RPS | RPSV2 | null => {
         const ethersProvider = new ethers.providers.Web3Provider(
           provider as unknown as ethers.providers.ExternalProvider
         );
-        if ((await ethersProvider.getCode(contractAddress)) === "0x") {
+        const contractByteCode = await ethersProvider.getCode(contractAddress);
+        if (contractByteCode === "0x") {
           setGameData((prevGameData) => ({
             ...prevGameData,
             isGame: false,
           }));
           return;
         }
+
+        let contract: RPS | RPSV2;
         const signer = ethersProvider.getSigner();
-        let contract: RPS | RPSV2 = RPS__factory.connect(
-          contractAddress,
-          signer
-        );
-        const contractVersion = checkRPSVersion(contract);
+        const contractVersion = checkRPSVersion(contractByteCode);
+        if (contractVersion === RPSVersion.RPS) {
+          contract = RPS__factory.connect(contractAddress, signer);
+        } else if (contractVersion === RPSVersion.RPSV2) {
+          contract = RPSV2__factory.connect(contractAddress, signer);
+        } else {
+          setGameData((prevGameData) => ({
+            ...prevGameData,
+            isGame: false,
+          }));
+          return;
+        }
+
         if (contractVersion === RPSVersion.RPSV2) {
           contract = RPSV2__factory.connect(contractAddress, signer);
 

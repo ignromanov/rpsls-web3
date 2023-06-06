@@ -1,6 +1,6 @@
 enum RPSVersion {
-  "RPS" = 1,
-  "RPSV2",
+  RPS = 1,
+  RPSV2,
 }
 
 enum Move {

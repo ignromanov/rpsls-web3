@@ -119,7 +119,7 @@ const GameEnded: React.FC = () => {
   return (
     <>
       <h1>{h1}</h1>
-      <p className="text-base my-3 text-violet-500 text-center">{text}</p>
+      <p className="text-base mb-3 text-violet-500 text-center">{text}</p>
       {winner !== null && firstMove && secondMove && (
         <>
           <div className="flex items-center justify-between w-full">
