@@ -2,19 +2,33 @@
 
 A decentralized Rock Paper Scissors game built on Ethereum using Next.js, TypeScript, and ethers.js.
 
+[🔗 **Demo**](https://rpsls-web3-six.vercel.app/)
+
 <p align="center"><img src="public/images/rpsls.png" alt="Rock Paper Scissors Lizard Spock" width="300" /></p>
 
 ## Overview
 
 This Rock Paper Scissors Lizard Spock game allows players to compete against each other in a trustless manner using Ethereum smart contracts. The game uses React for the front-end, TypeScript for type safety, and ethers.js for interacting with Ethereum.
 
+## Recent Updates
+
+1. Implemented RPSV2 - the second version of the game's contract which includes additional events allowing us to determine the game's winner. The player can now select the contract they wish to use and the winner will be displayed accordingly once the game ends.
+
+2. Enhanced protection against phishing of chain and contract by retaining this data for the first player between their moves. This prevents the second player from intentionally substituting the current game's blockchain or contract.
+
+3. Improved the process of saving and restoring the player's secret. At each step of the secret creation process, we try to ensure the data is kept safe by asking the player to save and retain it until the move is revealed. If the secret data isn't found locally during the move reveal, the player is prompted to enter it manually.
+
+4. Added an Anti-Phishing banner to ensure the player is on the correct site and always verifies the address to avoid phishing sites.
+
 ## Features
 
 - Trustless gameplay using Ethereum smart contracts
-- Encrypted moves for secure and fair play
+- Secure moves with encryption and local storage
+
 - User-friendly interface built with React and Tailwind CSS
 - Responsive design for mobile and desktop
 - Timeout system to handle unresponsive players
+- Anti-phishing banner for additional security
 
 ## How to Play
 
