@@ -35,10 +35,8 @@ export const checkRPSVersion = (bytecode: string) => {
 
 export const checkWinner = async (
   contract: RPS | RPSV2,
-  { c1, c2, j1, j2 }: GameData
+  { c1, c2, j1, j2, winner }: GameData
 ) => {
-  let winner: string | undefined | null = null;
-
   if (!c1 || !c2 || !j1 || !j2) {
     return winner;
   }

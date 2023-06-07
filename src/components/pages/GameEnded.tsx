@@ -11,23 +11,9 @@ import {
   ArrowLeftIcon,
   SpinnerIcon,
 } from "../elements/Icons";
+import { shortenAddress } from "@/utils/shorten";
 
 type GetGameResultDataType = (
-  j1: string,
-  j2: string,
-  c1: Move,
-  c2: Move,
-  winner: string | null | undefined,
-  address: string
-) => {
-  h1: string;
-  text: string | React.ReactNode;
-  firstMove: Move | null;
-  secondMove: Move | null;
-  ArrowComponent: (props: React.SVGAttributes<SVGElement>) => React.JSX.Element;
-};
-
-const getGameResultData: GetGameResultDataType = (
   j1: string,
   j2: string,
   c1: Move | null,
@@ -35,61 +21,99 @@ const getGameResultData: GetGameResultDataType = (
   winner: string | null | undefined,
   address: string
 ) => {
+  h1: string;
+  text: string | React.ReactNode;
+  firstMove: Move | null;
+  secondMove: Move | null;
+  ArrowComponent:
+    | ((props: React.SVGAttributes<SVGElement>) => React.JSX.Element)
+    | null;
+};
+
+const getGameResultData: GetGameResultDataType = (
+  j1,
+  j2,
+  c1,
+  c2,
+  winner,
+  address
+) => {
   const isAddressJ1 = address.toLowerCase() === j1.toLowerCase();
+  const isAddressJ2 = address.toLowerCase() === j2.toLowerCase();
 
   if (winner === null) {
     return {
       h1: "Game ended",
       text: "The game has ended with no clear winner",
-      firstMove: isAddressJ1 ? c1 : c2,
-      secondMove: isAddressJ1 ? c2 : c1,
-      ArrowComponent: MinusIcon,
+      firstMove: null,
+      secondMove: null,
+      ArrowComponent: null,
     };
   } else if (winner === undefined) {
     return {
       h1: "Draw game",
       text: "The game has ended in a draw",
-      firstMove: isAddressJ1 ? c1 : c2,
-      secondMove: isAddressJ1 ? c2 : c1,
+      firstMove: isAddressJ1 ? c1 : isAddressJ2 ? c2 : c1,
+      secondMove: isAddressJ1 ? c2 : isAddressJ2 ? c1 : c2,
       ArrowComponent: MinusIcon,
     };
   } else if (winner.toLowerCase() === j1.toLowerCase()) {
     return {
-      h1: isAddressJ1 ? "You Win!" : "Opponent Wins",
+      h1: isAddressJ1
+        ? "You Win!"
+        : isAddressJ2
+        ? "Opponent Wins"
+        : `Player ${shortenAddress(j1)} Wins`,
       text: isAddressJ1 ? (
         <>
           🎉 Congratulations! <br />
           You&apos;ve won the game
         </>
-      ) : (
+      ) : isAddressJ2 ? (
         "Your opponent has won the game"
+      ) : (
+        `Player ${shortenAddress(j1)} has won the game`
       ),
-      firstMove: isAddressJ1 ? c1 : c2,
-      secondMove: isAddressJ1 ? c2 : c1,
-      ArrowComponent: isAddressJ1 ? ArrowLeftIcon : ArrowRightIcon,
+      firstMove: isAddressJ1 ? c1 : isAddressJ2 ? c2 : c1,
+      secondMove: isAddressJ1 ? c2 : isAddressJ2 ? c1 : c2,
+      ArrowComponent: isAddressJ1
+        ? ArrowLeftIcon
+        : isAddressJ2
+        ? ArrowRightIcon
+        : ArrowLeftIcon,
     };
   } else if (winner.toLowerCase() === j2.toLowerCase()) {
     return {
-      h1: isAddressJ1 ? "Opponent Wins" : "You Win!",
+      h1: isAddressJ1
+        ? "Opponent Wins"
+        : isAddressJ2
+        ? "You Win!"
+        : `Player ${shortenAddress(j2)} Wins`,
       text: isAddressJ1 ? (
         "Your opponent has won the game"
-      ) : (
+      ) : isAddressJ2 ? (
         <>
           🎉 Congratulations! <br />
           You&apos;ve won the game
         </>
+      ) : (
+        `Player ${shortenAddress(j2)} has won the game`
       ),
-      firstMove: isAddressJ1 ? c1 : c2,
-      secondMove: isAddressJ1 ? c2 : c1,
-      ArrowComponent: isAddressJ1 ? ArrowRightIcon : ArrowLeftIcon,
+      firstMove: isAddressJ1 ? c1 : isAddressJ2 ? c2 : c1,
+      secondMove: isAddressJ1 ? c2 : isAddressJ2 ? c1 : c2,
+      ArrowComponent: isAddressJ1
+        ? ArrowRightIcon
+        : isAddressJ2
+        ? ArrowLeftIcon
+        : ArrowRightIcon,
     };
   } else {
     return {
       h1: "Game ended",
       text: "The game has ended with no clear winner",
-      firstMove: isAddressJ1 ? c1 : c2,
-      secondMove: isAddressJ1 ? c2 : c1,
-      ArrowComponent: MinusIcon,
+      firstMove: null,
+      secondMove: null,
+      ArrowComponent: null,
     };
   }
 };
@@ -106,6 +130,8 @@ const GameEnded: React.FC = () => {
   }, [router]);
 
   if (!j1 || !j2 || !address) return <SpinnerIcon />;
+  const isAddressJ1 = address.toLowerCase() === j1.toLowerCase();
+  const isAddressJ2 = address.toLowerCase() === j2.toLowerCase();
 
   const { h1, text, firstMove, secondMove, ArrowComponent } = getGameResultData(
     j1,
@@ -135,7 +161,9 @@ const GameEnded: React.FC = () => {
               />
             </div>
             <div className="text-center">
-              <ArrowComponent className="mx-4 w-10 h-10 fill-violet-800 text-violet-800" />
+              {ArrowComponent && (
+                <ArrowComponent className="mx-4 w-10 h-10 fill-violet-800 text-violet-800" />
+              )}
             </div>
             <div className="text-center w-full">
               <Image
@@ -150,8 +178,12 @@ const GameEnded: React.FC = () => {
             </div>
           </div>
           <div className="w-full flex items-center justify-between mb-2 px-1">
-            <p className="text-xs mt-1 text-violet-500">You</p>
-            <p className="text-xs mt-1 text-violet-500">Opponent</p>
+            <p className="text-xs mt-1 text-violet-500">
+              {isAddressJ1 || isAddressJ2 ? "You" : shortenAddress(j1)}
+            </p>
+            <p className="text-xs mt-1 text-violet-500">
+              {isAddressJ1 || isAddressJ2 ? "Opponent" : shortenAddress(j2)}
+            </p>
           </div>
         </>
       )}

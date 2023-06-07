@@ -21,6 +21,10 @@ const Game: React.FC = () => {
   const { player1Actions, player2Actions } = useRPSContract();
 
   const isChainMismatch = !!chainId && !!gameChainId && chainId !== gameChainId;
+  const isAddressJ1 =
+    address && j1 && address.toLowerCase() === j1.toLowerCase();
+  const isAddressJ2 =
+    address && j2 && address.toLowerCase() === j2.toLowerCase();
 
   useEffect(() => {
     const switchChain = async (gameChainId: string) => {
@@ -64,13 +68,18 @@ const Game: React.FC = () => {
   return (
     <>
       {isGameEnded && <GameEnded />}
-      {!isGameEnded && j1?.toLowerCase() === address?.toLowerCase() && (
+      {!isGameEnded && !isAddressJ1 && !isAddressJ2 && (
+        <p className="text-lg my-2- text-violet-600">
+          You are not a player in this game!
+        </p>
+      )}
+      {!isGameEnded && isAddressJ1 && (
         <Player1Game
           onSolve={player1Actions.onSolve}
           onJ2Timeout={player1Actions.onJ2Timeout}
         />
       )}
-      {!isGameEnded && j2?.toLowerCase() === address?.toLowerCase() && (
+      {!isGameEnded && isAddressJ2 && (
         <Player2Game
           onPlay={player2Actions.onPlay}
           onJ1Timeout={player2Actions.onJ1Timeout}

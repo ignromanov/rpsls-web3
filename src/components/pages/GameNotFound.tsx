@@ -1,16 +1,20 @@
-import React from "react";
+import { useRouter } from "next/router";
+import React, { useCallback } from "react";
+import ActionButton from "../elements/ActionButton";
 
 const GameNotFound = React.memo(() => {
+  const router = useRouter();
+  const clickHandler = useCallback(() => {
+    router.push("/");
+  }, [router]);
+
   return (
     <>
       <h1>Where did it go?</h1>
       <p className="text-lg my-2- text-red-600">Game not found!</p>
-      <p className="text-base my-2 text-violet-600">
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Click here
-        </a>
-        &nbsp;to start a new game.
-      </p>
+      <ActionButton isDisabled={false} onClickHandler={clickHandler}>
+        Start New Game
+      </ActionButton>
     </>
   );
 });
