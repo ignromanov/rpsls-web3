@@ -1,12 +1,21 @@
 import { shortenAddress } from "@/utils/shorten";
 import ActionButton from "../elements/ActionButton";
+import { useState, useCallback } from "react";
 
 interface TimeoutProps {
   opponentAddress: string | null;
-  onTimeout: () => void;
+  onTimeout: () => Promise<void>;
 }
 
 const Timeout: React.FC<TimeoutProps> = ({ opponentAddress, onTimeout }) => {
+  const [isInterfaceDisabled, setIsInterfaceDisabled] = useState(false);
+
+  const onTimeoutHandler = useCallback(async () => {
+    setIsInterfaceDisabled(true);
+    await onTimeout();
+    setIsInterfaceDisabled(false);
+  }, [onTimeout]);
+
   return (
     <>
       <h1>Duel in action!</h1>
@@ -17,7 +26,10 @@ const Timeout: React.FC<TimeoutProps> = ({ opponentAddress, onTimeout }) => {
         <br />
         Go ahead and win the game!
       </p>
-      <ActionButton isDisabled={false} onClickHandler={onTimeout}>
+      <ActionButton
+        isDisabled={isInterfaceDisabled}
+        onClickHandler={onTimeoutHandler}
+      >
         Win the Game!
       </ActionButton>
     </>

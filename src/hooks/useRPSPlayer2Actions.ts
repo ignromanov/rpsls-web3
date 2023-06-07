@@ -11,8 +11,8 @@ type UseRPSPlayer2Actions = (params: {
   rpsContract: RPS | RPSV2 | null;
   incrementTransactionCount: () => void;
 }) => {
-  onPlay: (move: Move) => void;
-  onJ1Timeout: () => void;
+  onPlay: (move: Move) => Promise<void>;
+  onJ1Timeout: () => Promise<void>;
 };
 
 const useRPSPlayer2Actions: UseRPSPlayer2Actions = ({

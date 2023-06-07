@@ -6,8 +6,8 @@ import useGameTimeout from "@/hooks/useGameTimeout";
 import { useGameData } from "@/contexts/GameDataContext";
 
 interface Player1GameProps {
-  onSolve: (_moveSecret: string | null) => void;
-  onJ2Timeout: () => void;
+  onSolve: (_moveSecret: string | null) => Promise<void>;
+  onJ2Timeout: () => Promise<void>;
 }
 
 const Player1Game: React.FC<Player1GameProps> = ({ onSolve, onJ2Timeout }) => {

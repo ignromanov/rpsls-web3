@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ActionButton from "../elements/ActionButton";
 import useGameTimeout from "@/hooks/useGameTimeout";
 import { useGameData } from "@/contexts/GameDataContext";
 import { isInLocalStorage } from "@/utils/storage";
 
 interface RevealMoveProps {
-  onSolve: (_moveSecret: string | null) => void;
+  onSolve: (_moveSecret: string | null) => Promise<void>;
 }
 
 export const RevealMove: React.FC<RevealMoveProps> = ({ onSolve }) => {
-  const [isSecretSaved, setIsSecretSaved] = React.useState(true);
-  const [_moveSecret, setMoveSecret] = React.useState<string | null>(null);
+  const [isSecretSaved, setIsSecretSaved] = useState(true);
+  const [_moveSecret, setMoveSecret] = useState<string | null>(null);
+  const [isInterfaceDisabled, setIsInterfaceDisabled] = useState(false);
 
   const { remainingSeconds } = useGameTimeout();
   const { gameData } = useGameData();
@@ -22,8 +23,10 @@ export const RevealMove: React.FC<RevealMoveProps> = ({ onSolve }) => {
     }
   }, [gameData, onSolve]);
 
-  const handleRevealMove = useCallback(() => {
-    onSolve(_moveSecret);
+  const handleRevealMove = useCallback(async () => {
+    setIsInterfaceDisabled(true);
+    await onSolve(_moveSecret);
+    setIsInterfaceDisabled(false);
   }, [_moveSecret, onSolve]);
 
   return (
@@ -51,7 +54,7 @@ export const RevealMove: React.FC<RevealMoveProps> = ({ onSolve }) => {
         </div>
       )}
       <ActionButton
-        isDisabled={!isSecretSaved && !_moveSecret}
+        isDisabled={isInterfaceDisabled || (!isSecretSaved && !_moveSecret)}
         onClickHandler={handleRevealMove}
       >
         Reveal Move

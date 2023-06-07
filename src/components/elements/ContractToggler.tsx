@@ -4,10 +4,12 @@ import React from "react";
 interface ContractTogglerProps {
   contractVersion: RPSVersion;
   setContractVersion: React.Dispatch<React.SetStateAction<RPSVersion>>;
+  isDisabled?: boolean;
 }
 
 const ContractToggler: React.FC<ContractTogglerProps> = ({
   setContractVersion,
+  isDisabled,
 }) => {
   return (
     <>
@@ -25,6 +27,7 @@ const ContractToggler: React.FC<ContractTogglerProps> = ({
           <input
             type="checkbox"
             value=""
+            disabled={isDisabled}
             className="sr-only peer"
             onChange={(e) =>
               setContractVersion(

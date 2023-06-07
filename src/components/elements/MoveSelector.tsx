@@ -5,10 +5,11 @@ import React from "react";
 interface MoveSelectorProps {
   selectedMove: Move | null;
   onMoveSelect: (move: Move) => void;
+  isDisabled?: boolean;
 }
 
 const MoveSelector: React.FC<MoveSelectorProps> = React.memo(
-  ({ selectedMove, onMoveSelect }) => {
+  ({ selectedMove, onMoveSelect, isDisabled }) => {
     return (
       <div className="flex my-2 space-x-2 justify-between content-between">
         {Object.values(Move).map((move, index) => {
@@ -25,7 +26,7 @@ const MoveSelector: React.FC<MoveSelectorProps> = React.memo(
                     ? "border-violet-800 border-2"
                     : "border-transparent"
                 }`}
-                onClick={() => onMoveSelect(move as Move)}
+                onClick={() => (isDisabled ? null : onMoveSelect(move as Move))}
                 width={80}
                 height={80}
               />

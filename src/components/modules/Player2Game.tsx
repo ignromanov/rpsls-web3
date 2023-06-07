@@ -8,11 +8,12 @@ import Timeout from "../pages/Timeout";
 import { useGameData } from "@/contexts/GameDataContext";
 
 interface Player2GameProps {
-  onPlay: (move: Move) => void;
-  onJ1Timeout: () => void;
+  onPlay: (move: Move) => Promise<void>;
+  onJ1Timeout: () => Promise<void>;
 }
 
 const Player2Game: React.FC<Player2GameProps> = ({ onPlay, onJ1Timeout }) => {
+  const [isInterfaceDisabled, setIsInterfaceDisabled] = useState(false);
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
   const { gameData } = useGameData();
   const { c2, j1, lastAction, stake } = gameData;
@@ -22,9 +23,11 @@ const Player2Game: React.FC<Player2GameProps> = ({ onPlay, onJ1Timeout }) => {
     setSelectedMove(move);
   }, []);
 
-  const handleMakeMove = useCallback(() => {
+  const handleMakeMove = useCallback(async () => {
     if (!selectedMove) return;
-    onPlay(selectedMove);
+    setIsInterfaceDisabled(true);
+    await onPlay(selectedMove);
+    setIsInterfaceDisabled(false);
   }, [onPlay, selectedMove]);
 
   if (c2 === 0) {
@@ -41,9 +44,10 @@ const Player2Game: React.FC<Player2GameProps> = ({ onPlay, onJ1Timeout }) => {
         <MoveSelector
           selectedMove={selectedMove}
           onMoveSelect={handleMoveSelect}
+          isDisabled={isInterfaceDisabled}
         />
         <ActionButton
-          isDisabled={!selectedMove}
+          isDisabled={!selectedMove || isInterfaceDisabled}
           onClickHandler={handleMakeMove}
         >
           Make Move

@@ -22,9 +22,10 @@ const StartGame: React.FC = () => {
   const [opponentAddress, setOpponentAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
-  const [contractVersion, setContractVersion] = React.useState<RPSVersion>(
+  const [contractVersion, setContractVersion] = useState<RPSVersion>(
     RPSVersion.RPS
   );
+  const [isInterfaceDisabled, setIsInterfaceDisabled] = useState(false);
 
   const [_secretToSave, _setSecretToSave] = useState<
     Player1SecretData | EthEncryptedData | null
@@ -62,6 +63,7 @@ const StartGame: React.FC = () => {
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (selectedMove && opponentAddress && amount && provider) {
+        setIsInterfaceDisabled(true);
         await player1Actions.startGame(
           selectedMove,
           amount,
@@ -69,6 +71,7 @@ const StartGame: React.FC = () => {
           contractVersion,
           _setSecretToSave
         );
+        setIsInterfaceDisabled(false);
       }
     },
     [
@@ -91,7 +94,8 @@ const StartGame: React.FC = () => {
     );
   }
 
-  const isDisabled =
+  const isButtonDisabled =
+    isInterfaceDisabled ||
     !selectedMove ||
     !opponentAddress ||
     !amount ||
@@ -104,6 +108,7 @@ const StartGame: React.FC = () => {
         type="text"
         value={opponentAddress}
         onChange={handleAddressChange}
+        disabled={isInterfaceDisabled}
         placeholder="Opponent's address"
         className={`w-full p-2 my-2 rounded ${
           ethers.utils.isAddress(opponentAddress) || opponentAddress === ""
@@ -117,6 +122,7 @@ const StartGame: React.FC = () => {
           step={1}
           min={1}
           value={amount}
+          disabled={isInterfaceDisabled}
           onChange={handleAmountChange}
           placeholder="Bet amount"
           className="relative flex-grow min-w-0 block p-2 rounded-l border-violet-400"
@@ -128,12 +134,17 @@ const StartGame: React.FC = () => {
       <MoveSelector
         selectedMove={selectedMove}
         onMoveSelect={handleMoveSelect}
+        isDisabled={isInterfaceDisabled}
       />
       <ContractToggler
         contractVersion={contractVersion}
         setContractVersion={setContractVersion}
+        isDisabled={isInterfaceDisabled}
       />
-      <ActionButton isDisabled={isDisabled} onClickHandler={handleStartGame}>
+      <ActionButton
+        isDisabled={isButtonDisabled}
+        onClickHandler={handleStartGame}
+      >
         Start Game
       </ActionButton>
     </form>
