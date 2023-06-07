@@ -9,19 +9,19 @@ interface LayoutProps {
 }
 
 const CardLayout: React.FC<LayoutProps> = ({ children }) => {
-  const { provider } = useWallet();
+  const { provider, address } = useWallet();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <AntiPhishingBanner />
       <div className="w-150 p-6 bg-violet-200 rounded-lg drop-shadow-2xl">
         <div className="flex flex-col items-center justify-center">
-          {!provider && <WalletButton />}
-          {provider && children}
-          {provider && <ShareGame />}
+          {(!provider || !address) && <WalletButton />}
+          {provider && address && children}
+          {provider && address && <ShareGame />}
         </div>
       </div>
-      {provider && (
+      {provider && address && (
         <div className="fixed top-0 right-0 p-4">
           <WalletButton />
         </div>

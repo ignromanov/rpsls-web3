@@ -7,21 +7,22 @@ const WalletButton: React.FC = () => {
   const { provider, address, connectWallet, disconnectWallet } = useWallet();
 
   const handleButtonClick = () => {
-    if (provider) {
+    if (provider && address) {
       disconnectWallet();
     } else {
       connectWallet();
     }
   };
 
-  const buttonText = provider ? (
-    <>
-      Disconnect
-      <br />({shortenAddress(address)})
-    </>
-  ) : (
-    "Connect"
-  );
+  const buttonText =
+    provider && address ? (
+      <>
+        Disconnect
+        <br />({shortenAddress(address)})
+      </>
+    ) : (
+      "Connect"
+    );
 
   return (
     <button
