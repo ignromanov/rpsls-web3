@@ -3,7 +3,7 @@ import { RPS, RPSV2 } from "@/contracts";
 import { RPSVersion } from "@/types";
 import { checkWinner } from "@/utils/contract";
 import { ethers } from "ethers";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 
 interface UseRPSFetchData {
   rpsContract: RPS | RPSV2 | null;
@@ -13,6 +13,7 @@ const useRPSFetchData = ({
   rpsContract,
   transactionCount,
 }: UseRPSFetchData) => {
+  const [fetchIntervalTime, setFetchIntervalTime] = useState(5000);
   const { gameData, setGameData } = useGameData();
   const { chainId, contractAddress, contractVersion } = gameData;
 
@@ -34,6 +35,7 @@ const useRPSFetchData = ({
             rpsContract.c1Hash(),
             rpsContract.TIMEOUT(),
           ]);
+
         const winner = await checkWinner(rpsContract, {
           ...gameData,
           c1,
@@ -42,6 +44,9 @@ const useRPSFetchData = ({
           j2,
         });
 
+        if (winner !== null || stake.eq(0)) {
+          setFetchIntervalTime(60000);
+        }
         setGameData((prevGameData) => {
           const newLastAction = lastAction.toNumber();
           const newStake = ethers.utils.formatUnits(stake, "wei");
@@ -85,11 +90,17 @@ const useRPSFetchData = ({
     fetchContractData();
     const fetchInterval = setInterval(() => {
       fetchContractData();
-    }, 3000);
+    }, fetchIntervalTime);
 
     return () => clearInterval(fetchInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rpsContract, transactionCount, chainId, contractAddress]);
+  }, [
+    rpsContract,
+    transactionCount,
+    chainId,
+    contractAddress,
+    fetchIntervalTime,
+  ]);
 };
 
 export default useRPSFetchData;
