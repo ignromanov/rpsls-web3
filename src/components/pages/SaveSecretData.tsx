@@ -43,13 +43,17 @@ const SaveSecretData: React.FC<SaveSecretDataProps> = ({
     );
   } else {
     secretDataAlert = (
-      <p className="text-base my-2 text-violet-600 text-center">
-        We&apos;ve encrypted and locally saved your move&apos;s secret data.
+      <p className="text-sm my-4 bg-violet-50 p-3 text-violet-600 text-center shadow-md">
+        🔐 We&apos;ve encrypted and locally saved your move&apos;s secret data.
         <br />
-        🛡️ Just in case, we recommend you to save it as well.
+        Your secret data will stay safe here, unless you switch browsers.
+        <br />
+        In that case, you would need to enter them again.
+        <br />
+        🛡️ Just in case, we recommend you to save it as well. 🛡️
         <CopyInput
           value={JSON.stringify(_secretToSave)}
-          className="my-4"
+          className="mt-3"
           type={unEncryptedSecret ? "password" : "text"}
         />
       </p>
