@@ -2,7 +2,7 @@
 
 A decentralized Rock Paper Scissors game built on Ethereum using Next.js, TypeScript, and ethers.js.
 
-[🔗 **Demo**](https://rpsls-web3-six.vercel.app/)
+[🕹️ **Play the Game Now!**](https://rpsls-web3-six.vercel.app/)
 
 <p align="center"><img src="public/images/rpsls.png" alt="Rock Paper Scissors Lizard Spock" width="300" /></p>
 
